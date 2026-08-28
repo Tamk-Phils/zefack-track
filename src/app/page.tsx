@@ -48,12 +48,10 @@ export default function Home() {
       {/* 1. HERO SECTION - Animated background & hero contents */}
       <section className="relative min-h-[85vh] flex items-center py-20 overflow-hidden bg-slate-900 text-white">
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
             alt="SwiftLink Global Cargo Logistics"
-            fill
-            priority
-            className="object-cover object-center opacity-30 scale-105 animate-pulse"
+            className="w-full h-full object-cover opacity-30 scale-105 animate-pulse"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-blue-950/80" />
         </div>
@@ -86,14 +84,14 @@ export default function Home() {
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
                   href="/usage"
-                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-sm px-8 py-4 rounded-xl shadow-xl transition-all flex items-center gap-3 group"
+                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-sm px-8 py-4 rounded-xl shadow-xl transition-all flex items-center gap-3 group cursor-pointer"
                 >
                   <span>View Services</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="/quote"
-                  className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-sm px-8 py-4 rounded-xl border border-white/20 backdrop-blur-md transition-all"
+                  className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-sm px-8 py-4 rounded-xl border border-white/20 backdrop-blur-md transition-all cursor-pointer"
                 >
                   Get a Free Quote
                 </Link>
@@ -269,9 +267,9 @@ export default function Home() {
               { title: "Air Freight", desc: "Dedicated express air transport corridors guaranteeing rapid transit.", icon: Plane, img: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?q=80&w=800", href: "/usage#air" },
               { title: "Road Transport", desc: "Nationwide ground shipping with continuous GPS tracking.", icon: Truck, img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=800", href: "/usage#road" },
               { title: "Ocean Freight", desc: "International maritime container shipping with customs clearance.", icon: Ship, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800", href: "/usage#ocean" },
-              { title: "Rail Freight", desc: "Eco-friendly long-distance bulk rail transit solutions.", icon: Train, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?q=80&w=800", href: "/usage#rail" },
+              { title: "Rail Freight", desc: "Eco-friendly long-distance bulk rail transit solutions.", icon: Train, img: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?q=80&w=800", href: "/usage#rail" },
               { title: "Warehousing", desc: "Strategic climate-controlled storage & inventory fulfillment.", icon: Box, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800", href: "/usage#warehouse" },
-              { title: "Packaging", desc: "Industrial protective packaging & custom crating options.", icon: Package, img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=800", href: "/usage#packaging" },
+              { title: "Packaging", desc: "Industrial protective packaging & custom crating options.", icon: Package, img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800", href: "/usage#packaging" },
               { title: "Logistics Solution", desc: "End-to-end supply chain integration & route optimization.", icon: Layers, img: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=800", href: "/usage#logistics" },
               { title: "Cargo Insurance", desc: "Full transit policy coverage protecting high-value shipments.", icon: ShieldCheck, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800", href: "/usage#insurance" },
             ].map((service, i) => (
@@ -285,12 +283,11 @@ export default function Home() {
                 className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all border border-slate-100 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
+                  <div className="relative h-48 overflow-hidden bg-slate-100">
+                    <img
                       src={service.img}
                       alt={service.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4 w-11 h-11 bg-white/95 rounded-2xl flex items-center justify-center text-blue-600 shadow-lg backdrop-blur-md">
                       <service.icon size={22} />
@@ -331,12 +328,11 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="relative h-[380px] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
-              <Image
+            <div className="relative h-[380px] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl bg-slate-800">
+              <img
                 src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200"
                 alt="SwiftLink Logistics Excellence"
-                fill
-                className="object-cover"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
             </div>

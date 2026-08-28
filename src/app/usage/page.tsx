@@ -34,7 +34,7 @@ export default function UsagePage() {
             id: "rail",
             title: "Rail Freight",
             desc: "Eco-friendly, high-capacity long-distance rail logistics tailored for heavy industrial freight and bulk raw materials.",
-            img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?q=80&w=1000",
+            img: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?q=80&w=1000",
             icon: Train,
             features: ["Bulk Rail Intermodal Transit", "Low-Emission Freight Corridors", "Regional Terminal Transfer"]
         },
@@ -50,7 +50,7 @@ export default function UsagePage() {
             id: "packaging",
             title: "Packaging & Crating",
             desc: "Industrial protective packaging, custom wooden crating, and hazardous material containerization for safe transit.",
-            img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1000",
+            img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1000",
             icon: Package,
             features: ["Custom Wooden Crating", "Shock & Moisture Protection", "Eco-Friendly Recyclable Materials"]
         },
@@ -94,12 +94,11 @@ export default function UsagePage() {
                             className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-md hover:shadow-2xl transition-all space-y-6 flex flex-col justify-between group"
                         >
                             <div className="space-y-6">
-                                <div className="relative h-56 rounded-2xl overflow-hidden">
-                                    <Image
+                                <div className="relative h-56 rounded-2xl overflow-hidden bg-slate-100">
+                                    <img
                                         src={service.img}
                                         alt={service.title}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                     <div className="absolute top-4 left-4 w-12 h-12 bg-white/95 rounded-2xl flex items-center justify-center text-blue-600 shadow-md backdrop-blur-md">
                                         <service.icon size={24} />
