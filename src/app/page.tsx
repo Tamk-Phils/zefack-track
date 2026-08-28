@@ -101,24 +101,35 @@ const FeatureDropdownItem = ({
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Hero Section - Completely Bright & Clean without Dark Layer */}
-      <section className="relative min-h-[80vh] flex items-center pt-28 pb-24 overflow-hidden bg-gradient-to-b from-blue-50/60 via-white to-slate-50 border-b border-slate-100">
+      {/* Hero Section - Package Background Image with NO Dark Overlay */}
+      <section className="relative min-h-[85vh] flex items-center pt-28 pb-24 overflow-hidden">
+        {/* Raw Package Background Image - Absolutely NO Dark Overlay / Coating */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
+            alt="SwiftLink Express Package Logistics Background"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+        </div>
+
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-8">
+            <div className="lg:col-span-7 space-y-8 bg-white/95 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-slate-200/90 shadow-2xl">
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-700 font-bold text-xs uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 text-blue-700 font-bold text-xs uppercase tracking-wider">
                   <Zap size={14} className="text-blue-600 fill-blue-600" />
                   SwiftLink Express Network
                 </div>
 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
                   Track Your <br />
                   <span className="text-blue-600">Packages in Real Time</span>
                 </h1>
 
-                <p className="text-slate-600 text-base md:text-xl font-medium max-w-xl leading-relaxed">
+                <p className="text-slate-600 text-base md:text-lg font-medium max-w-xl leading-relaxed">
                   Get real-time updates on your shipments. <br className="hidden sm:inline" />
                   Fast, reliable and secure tracking for your peace of mind.
                 </p>
@@ -130,9 +141,9 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Package Image Showcase - Crisp Clean Image without dark overlay */}
+            {/* Right Package Image Showcase (Desktop Showcase) */}
             <div className="hidden lg:block lg:col-span-5">
-              <div className="relative h-[460px] rounded-3xl overflow-hidden border border-slate-200/80 shadow-2xl group bg-white">
+              <div className="relative h-[440px] rounded-3xl overflow-hidden border border-white/80 shadow-2xl group bg-white">
                 <Image
                   src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1200"
                   alt="SwiftLink Express Parcel Package"
