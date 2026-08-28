@@ -2,21 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { ChevronUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 export default function BackToTop() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        let ticking = false;
+
         const toggleVisibility = () => {
-            if (window.scrollY > 300) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    setIsVisible(window.scrollY > 300);
+                    ticking = false;
+                });
+                ticking = true;
             }
         };
 
-        window.addEventListener("scroll", toggleVisibility);
+        window.addEventListener("scroll", toggleVisibility, { passive: true });
         return () => window.removeEventListener("scroll", toggleVisibility);
     }, []);
 
@@ -27,19 +30,15 @@ export default function BackToTop() {
         });
     };
 
+    if (!isVisible) return null;
+
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    onClick={scrollToTop}
-                    className="fixed bottom-24 right-4 md:bottom-28 md:right-8 p-4 bg-white border border-slate-200 text-slate-900 rounded-sm shadow-xl hover:bg-primary hover:text-white hover:border-primary transition-all z-40 group"
-                >
-                    <ChevronUp size={24} className="group-hover:-translate-y-1 transition-transform" />
-                </motion.button>
-            )}
-        </AnimatePresence>
+        <button
+            onClick={scrollToTop}
+            aria-label="Back to top"
+            className="fixed bottom-6 right-6 p-3.5 bg-blue-600 text-white rounded-full shadow-2xl hover:bg-blue-700 active:scale-95 transition-all z-40 animate-in fade-in duration-200 border border-blue-500/30"
+        >
+            <ChevronUp size={22} />
+        </button>
     );
 }
