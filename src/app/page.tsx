@@ -44,8 +44,8 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28">
-      {/* 1. HERO SECTION - Matching theglobalcargo */}
+    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28 overflow-x-hidden">
+      {/* 1. HERO SECTION - Animated background & hero contents */}
       <section className="relative min-h-[85vh] flex items-center py-20 overflow-hidden bg-slate-900 text-white">
         <div className="absolute inset-0 z-0">
           <Image
@@ -53,7 +53,7 @@ export default function Home() {
             alt="SwiftLink Global Cargo Logistics"
             fill
             priority
-            className="object-cover object-center opacity-30"
+            className="object-cover object-center opacity-30 scale-105 animate-pulse"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-blue-950/80" />
         </div>
@@ -61,7 +61,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Hero Copy */}
-            <div className="lg:col-span-7 space-y-8">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-7 space-y-8"
+            >
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg">
                   <Zap size={14} className="fill-white" />
@@ -93,10 +98,15 @@ export default function Home() {
                   Get a Free Quote
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Hero Tracking Consignment Search */}
-            <div className="lg:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:col-span-5"
+            >
               <div className="bg-white/95 backdrop-blur-md p-8 rounded-3xl border border-white/80 shadow-2xl text-slate-900 space-y-4">
                 <div className="space-y-1 border-b border-slate-100 pb-3">
                   <span className="text-xs font-black uppercase tracking-wider text-blue-600">ENTER CONSIGNMENT NO.</span>
@@ -106,7 +116,7 @@ export default function Home() {
 
                 <TrackingSearch />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -114,44 +124,47 @@ export default function Home() {
       {/* 2. THREE QUICK FEATURE CARDS - Overlapping Below Hero */}
       <section className="relative z-30 max-w-7xl mx-auto px-6 -mt-12 mb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all space-y-4 group">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-md">
-              <Layers size={26} />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Supply Chain Solutions</h3>
-            <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Optimize your operations with our tailored supply chain solutions. From procurement to distribution, we streamline your logistics workflow.
-            </p>
-            <Link href="/usage#logistics" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
-              Learn More <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all space-y-4 group">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-md">
-              <Truck size={26} />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">End-to-End Transportation</h3>
-            <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Experience seamless logistics from start to finish with our end-to-end transportation services across land, sea, and air corridors.
-            </p>
-            <Link href="/usage#road" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
-              Learn More <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all space-y-4 group">
-            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-md">
-              <Box size={26} />
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Contract Logistics</h3>
-            <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Delegate your logistics operations to the experts. With our contract logistics services, we manage your warehousing & fulfillment.
-            </p>
-            <Link href="/usage#warehouse" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
-              Learn More <ArrowRight size={14} />
-            </Link>
-          </div>
+          {[
+            {
+              title: "Supply Chain Solutions",
+              desc: "Optimize your operations with our tailored supply chain solutions. From procurement to distribution, we streamline your logistics workflow.",
+              icon: Layers,
+              href: "/usage#logistics"
+            },
+            {
+              title: "End-to-End Transportation",
+              desc: "Experience seamless logistics from start to finish with our end-to-end transportation services across land, sea, and air corridors.",
+              icon: Truck,
+              href: "/usage#road"
+            },
+            {
+              title: "Contract Logistics",
+              desc: "Delegate your logistics operations to the experts. With our contract logistics services, we manage your warehousing & fulfillment.",
+              icon: Box,
+              href: "/usage#warehouse"
+            }
+          ].map((card, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              whileHover={{ y: -6 }}
+              className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all space-y-4 group"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-md">
+                <card.icon size={26} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{card.title}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed font-normal">
+                {card.desc}
+              </p>
+              <Link href={card.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+                Learn More <ArrowRight size={14} />
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -186,7 +199,10 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Global Service */}
-            <div className="p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl transition-all group">
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl transition-all group"
+            >
               <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
                 <Globe size={32} />
               </div>
@@ -206,10 +222,13 @@ export default function Home() {
                   Discover More <ArrowRight size={14} />
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
             {/* Local Service */}
-            <div className="p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl transition-all group">
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="p-8 md:p-10 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl transition-all group"
+            >
               <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
                 <Compass size={32} />
               </div>
@@ -229,7 +248,7 @@ export default function Home() {
                   Discover More <ArrowRight size={14} />
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -256,8 +275,13 @@ export default function Home() {
               { title: "Logistics Solution", desc: "End-to-end supply chain integration & route optimization.", icon: Layers, img: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=800", href: "/usage#logistics" },
               { title: "Cargo Insurance", desc: "Full transit policy coverage protecting high-value shipments.", icon: ShieldCheck, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800", href: "/usage#insurance" },
             ].map((service, i) => (
-              <div
+              <motion.div
                 key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                whileHover={{ y: -6 }}
                 className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all border border-slate-100 group flex flex-col justify-between"
               >
                 <div>
@@ -282,7 +306,7 @@ export default function Home() {
                     Learn More <ArrowRight size={14} />
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -397,7 +421,11 @@ export default function Home() {
               { title: "Industrial Manufacturing", desc: "Heavy machinery freight, raw material transport, and plant logistics.", icon: Factory, href: "/quote" },
               { title: "Retail & Fashion", desc: "Rapid e-commerce fulfillment, store distribution, and seasonal inventory logistics.", icon: ShoppingBag, href: "/quote" },
             ].map((sector, i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all group">
+              <motion.div
+                key={i}
+                whileHover={{ y: -5 }}
+                className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all group"
+              >
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                   <sector.icon size={24} />
                 </div>
@@ -406,7 +434,7 @@ export default function Home() {
                 <Link href={sector.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
                   Read More <ArrowRight size={14} />
                 </Link>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -426,7 +454,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
               <Quote size={32} className="text-blue-600" />
               <p className="text-slate-700 text-sm font-medium leading-relaxed">
                 "SwiftLink transformed our cross-border supply chain. Their real-time satellite tracking and customs brokerage eliminated our port clearance delays."
@@ -435,9 +463,9 @@ export default function Home() {
                 <p className="font-extrabold text-slate-900 text-sm">Marcus Vance</p>
                 <p className="text-xs font-semibold text-slate-400">Global Supply VP, Apex Logistics</p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
               <Quote size={32} className="text-blue-600" />
               <p className="text-slate-700 text-sm font-medium leading-relaxed">
                 "Their air freight express guarantees 24-hour turnaround for our urgent electronics cargo. The live map interface gives our clients total peace of mind."
@@ -446,9 +474,9 @@ export default function Home() {
                 <p className="font-extrabold text-slate-900 text-sm">Sarah Jenkins</p>
                 <p className="text-xs font-semibold text-slate-400">Operations Director, TechExpress</p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
               <Quote size={32} className="text-blue-600" />
               <p className="text-slate-700 text-sm font-medium leading-relaxed">
                 "Contract warehousing and fulfillment with SwiftLink reduced our storage overhead by 30% while improving last-mile delivery times."
@@ -457,7 +485,7 @@ export default function Home() {
                 <p className="font-extrabold text-slate-900 text-sm">David Chen</p>
                 <p className="text-xs font-semibold text-slate-400">Logistics Manager, Oceanica Freight</p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
