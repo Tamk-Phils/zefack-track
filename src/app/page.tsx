@@ -1,6 +1,6 @@
 "use client";
 
-import { MoveRight, ShieldCheck, Globe, Zap, Star, ChevronDown, CheckCircle2, TrendingUp, Boxes, Briefcase, Camera, Play, Layers, Activity, Cpu, Radio, Radar, Shield, ArrowUpRight, BarChart3, Database, Truck, Ship, Plane, Clock, Phone, Mail, MapPin } from "lucide-react";
+import { MoveRight, ShieldCheck, Globe, Zap, Star, ChevronDown, CheckCircle2, TrendingUp, Boxes, Briefcase, Camera, Play, Layers, Activity, Cpu, Radio, Radar, Shield, ArrowUpRight, BarChart3, Database, Truck, Ship, Plane, Clock, Phone, Mail, MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,17 +12,20 @@ import TrackingSearch from "@/components/TrackingSearch";
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-slate-100 last:border-0">
+    <div className="border-b border-white/10 last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-8 flex justify-between items-center text-left group"
+        className="w-full py-6 flex justify-between items-center text-left group transition-colors"
       >
-        <span className="text-lg font-bold text-slate-900 group-hover:text-primary transition-all tracking-tight">{question}</span>
+        <span className="text-base md:text-lg font-bold font-display text-slate-200 group-hover:text-cyan-400 transition-colors tracking-tight flex items-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-cyan-400/50 group-hover:bg-cyan-400 transition-colors" />
+          {question}
+        </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          className="text-slate-400 group-hover:text-primary transition-colors"
+          className="text-slate-400 group-hover:text-cyan-400 transition-colors shrink-0 ml-4"
         >
-          <ChevronDown size={24} />
+          <ChevronDown size={20} />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -33,7 +36,7 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="pb-8 text-slate-500 text-base leading-relaxed max-w-3xl">
+            <p className="pb-6 text-slate-400 text-sm leading-relaxed max-w-3xl font-sans pl-5">
               {answer}
             </p>
           </motion.div>
@@ -45,250 +48,270 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 
 export default function Home() {
   return (
-    <main className="relative bg-white min-h-screen overflow-hidden text-slate-900 font-sans">
+    <main className="relative bg-[#090d16] min-h-screen overflow-hidden text-slate-100 font-sans bg-cyber-grid">
+      {/* Background Ambient Glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-cyan-500/15 via-indigo-500/10 to-transparent blur-[140px] pointer-events-none" />
+      <div className="absolute top-[800px] right-0 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden">
-        {/* Mobile View Background Image (Raw image directly behind text, zero white coating) */}
-        <div className="absolute inset-0 z-0 lg:hidden pointer-events-none overflow-hidden">
-          <Image 
-            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000" 
-            alt="SwiftLink Background" 
-            fill 
-            className="object-cover opacity-100"
-            priority
-          />
-          {/* Subtle gradient contrast overlay so text pops over raw image without any white wash */}
-          <div className="absolute inset-0 bg-slate-900/30" />
-        </div>
-
-        {/* Decorative background circle */}
-        <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-blue-50 rounded-l-full -mr-20 z-0 opacity-50 hidden lg:block" />
-        
+      <section className="relative min-h-[92vh] flex items-center pt-36 pb-20 overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="max-w-4xl mx-auto text-center space-y-8 mb-14">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="lg:col-span-7 space-y-8"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-wider uppercase shadow-[0_0_20px_rgba(0,242,254,0.2)]"
             >
-              <div className="inline-flex items-center gap-3 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Fast Shipping Across America</span>
-              </div>
-              
-              <h1 className="text-5xl md:text-8xl font-black leading-[1.1] tracking-tighter text-slate-900">
-                Ship Your Stuff <br />
-                With <span className="text-primary">SwiftLink.</span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-slate-800 lg:text-slate-500 leading-relaxed max-w-2xl font-bold lg:font-medium">
-                The easiest way to send and track your boxes. Whether it's across town or coast-to-coast, we get your packages there safe and on time.
-              </p>
-
-              <div className="flex flex-wrap gap-6 pt-4">
-                <Link href="/tracking" className="inline-flex items-center gap-3 bg-primary text-white px-10 py-5 rounded-full font-bold text-base hover:bg-slate-900 transition-all shadow-xl shadow-primary/20 group">
-                  Track Your Box <MoveRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link href="/quote" className="inline-flex items-center gap-3 bg-white text-slate-900 px-10 py-5 rounded-full font-bold text-base hover:bg-slate-50 transition-all border border-slate-200 shadow-sm">
-                  Get a Free Price
-                </Link>
-              </div>
-
-              <div className="flex items-center gap-8 pt-10 border-t border-slate-100">
-                 <div className="flex -space-x-3">
-                    {[
-                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
-                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
-                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
-                      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150"
-                    ].map((imgUrl, i) => (
-                      <div key={i} className="w-12 h-12 rounded-full border-4 border-white overflow-hidden relative bg-slate-200">
-                        <Image src={imgUrl} alt="User" fill className="object-cover" />
-                      </div>
-                    ))}
-                 </div>
-                 <div>
-                    <div className="flex items-center gap-1 text-amber-400 mb-1">
-                       {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="currentColor" />)}
-                    </div>
-                    <p className="text-sm font-bold text-slate-900">Loved by thousands of families & businesses</p>
-                 </div>
-              </div>
+              <Radar size={14} className="animate-spin-slow text-cyan-400" />
+              <span>ZEFACK TELEMETRY ENGINE 4.0 ACTIVE</span>
             </motion.div>
 
-            <div className="lg:col-span-5 relative">
-               <motion.div 
-                 initial={{ opacity: 0, scale: 0.9 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ duration: 1 }}
-                 className="relative aspect-square w-full rounded-3xl overflow-hidden shadow-2xl group"
-               >
-                  <Image 
-                    src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000" 
-                    alt="SwiftLink Warehouse" 
-                    fill 
-                    className="object-cover group-hover:scale-105 transition-transform duration-700" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
-                  
-                  {/* Floating Box Count */}
-                  <div className="absolute top-10 right-10 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-white/20">
-                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Packages Today</p>
-                     <p className="text-4xl font-black text-primary tracking-tighter">25,481</p>
-                  </div>
-               </motion.div>
-            </div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-5xl md:text-7xl lg:text-8xl font-black font-display leading-[1.05] tracking-tight text-white"
+            >
+              Next-Gen Global <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-indigo-300 to-violet-400 bg-clip-text text-transparent">
+                Telemetry Freight
+              </span> Matrix
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-slate-400 text-base md:text-xl font-normal max-w-2xl mx-auto leading-relaxed"
+            >
+              Seamless satellite dispatch, real-time GPS route surveillance, and autonomous package tracking across 180+ global transit hubs.
+            </motion.p>
           </div>
+
+          {/* Interactive Telemetry Search Bar Box */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="max-w-4xl mx-auto mb-16"
+          >
+            <TrackingSearch />
+          </motion.div>
+
+          {/* Hero Live Stats Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 border-t border-white/10"
+          >
+            {[
+              { value: "99.98%", label: "Precision Rate", icon: ShieldCheck, color: "text-cyan-400" },
+              { value: "180+", label: "Global Hubs", icon: Globe, color: "text-indigo-400" },
+              { value: "< 2ms", label: "Satellite Latency", icon: Zap, color: "text-emerald-400" },
+              { value: "2.4M+", label: "Active Packages", icon: Truck, color: "text-violet-400" }
+            ].map((stat, i) => (
+              <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-3.5">
+                <div className={`p-2.5 rounded-xl bg-white/5 ${stat.color}`}>
+                  <stat.icon size={20} />
+                </div>
+                <div>
+                  <p className="text-lg md:text-xl font-extrabold font-display text-white">{stat.value}</p>
+                  <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="py-32 bg-slate-50">
-         <div className="container mx-auto px-6">
-            <div className="text-center max-w-3xl mx-auto mb-24">
-               <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">How We Deliver</h2>
-               <p className="text-lg text-slate-500 font-medium">We have many ways to get your stuff where it needs to go, fast and safe.</p>
-            </div>
+      <section className="py-28 relative border-t border-white/10">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
+            <span className="text-xs font-mono font-bold uppercase tracking-[0.3em] text-cyan-400">DISPATCH MODALITIES</span>
+            <h2 className="text-4xl md:text-6xl font-black font-display text-white tracking-tight">Autonomous Freight Fleet</h2>
+            <p className="text-slate-400 text-base leading-relaxed">Multimodal logistics solutions engineered with satellite telemetry, AI route optimization, and end-to-end cargo insurance.</p>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {[
-                  { icon: Truck, title: "Local Delivery", desc: "For things moving within your city or state. Fast and cheap.", img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=1000" },
-                  { icon: Plane, title: "Air Express", desc: "Need it tomorrow? We'll fly it anywhere in the country.", img: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?q=80&w=1000" },
-                  { icon: Boxes, title: "Business Shipping", desc: "Special rates and tools for stores and online sellers.", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1000" }
-               ].map((service, i) => (
-                  <motion.div 
-                    key={i}
-                    whileHover={{ y: -10 }}
-                    className="bg-white rounded-3xl overflow-hidden shadow-xl border border-slate-100 group"
-                  >
-                     <div className="relative h-64 overflow-hidden">
-                        <Image src={service.img} alt={service.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-slate-900/20" />
-                        <div className="absolute bottom-6 left-6">
-                           <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-primary shadow-xl">
-                              <service.icon size={24} />
-                           </div>
-                        </div>
-                     </div>
-                     <div className="p-10">
-                        <h3 className="text-2xl font-black text-slate-900 mb-4">{service.title}</h3>
-                        <p className="text-slate-500 leading-relaxed mb-8">{service.desc}</p>
-                        <Link href="/services" className="inline-flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all">
-                           See Details <MoveRight size={18} />
-                        </Link>
-                     </div>
-                  </motion.div>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* Simple How it Works */}
-      <section className="py-32 bg-white">
-         <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-               <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl">
-                  <Image src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1000" alt="Shipping" fill className="object-cover" />
-               </div>
-
-               <div className="space-y-12">
-                  <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Easy as 1, 2, 3...</h2>
-                  <div className="space-y-10">
-                     {[
-                        { step: "1", title: "Tell us about your box", desc: "Enter where it's going and how much it weighs in lbs." },
-                        { step: "2", title: "Print your label", desc: "Pay a low price and print your shipping label at home." },
-                        { step: "3", title: "Hand it to us", desc: "Drop it off or we'll come pick it up from your house." },
-                        { step: "4", title: "Relax", desc: "Watch your package move on our live map until it's delivered." }
-                     ].map((item, i) => (
-                        <div key={i} className="flex gap-8 group">
-                           <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-black text-xl shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                              {item.step}
-                           </div>
-                           <div className="space-y-1">
-                              <h4 className="text-xl font-bold text-slate-900">{item.title}</h4>
-                              <p className="text-slate-500 font-medium">{item.desc}</p>
-                           </div>
-                        </div>
-                     ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Truck,
+                title: "Autonomous Ground Fleet",
+                tag: "HIGH-SPEED ROAD RELAY",
+                desc: "Real-time telemetry-monitored ground trucks operating across 50 US states with climate-controlled tracking.",
+                img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=1000"
+              },
+              {
+                icon: Plane,
+                title: "Orbital Air Express",
+                tag: "SAME-DAY SATELLITE DISPATCH",
+                desc: "Dedicated air transport corridors guaranteeing under-24-hour deliveries for time-critical express freight.",
+                img: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?q=80&w=1000"
+              },
+              {
+                icon: Ship,
+                title: "Ocean Freight Cargo Matrix",
+                tag: "GLOBAL MARITIME ROUTING",
+                desc: "Containerized international sea freight connected with automated customs pass-through protocols.",
+                img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1000"
+              }
+            ].map((service, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -8 }}
+                className="group rounded-3xl bg-[#0f172a]/80 border border-white/10 overflow-hidden shadow-2xl hover:border-cyan-500/40 hover:shadow-[0_15px_40px_rgba(0,242,254,0.2)] transition-all duration-500"
+              >
+                <div className="relative h-60 overflow-hidden">
+                  <Image
+                    src={service.img}
+                    alt={service.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/40 to-transparent" />
+                  <div className="absolute top-4 left-4 bg-[#090d16]/80 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10 text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                    {service.tag}
                   </div>
-                  <div className="pt-4">
-                     <Link href="/signup" className="inline-flex items-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-full font-bold text-base hover:bg-primary transition-all shadow-2xl">
-                        Get Your First Label
-                     </Link>
+                  <div className="absolute bottom-4 left-6">
+                    <div className="w-12 h-12 bg-cyan-400 text-[#090d16] rounded-2xl flex items-center justify-center shadow-lg font-bold">
+                      <service.icon size={24} />
+                    </div>
                   </div>
-               </div>
-            </div>
-         </div>
+                </div>
+
+                <div className="p-8 space-y-4">
+                  <h3 className="text-2xl font-bold font-display text-white group-hover:text-cyan-400 transition-colors">{service.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed font-sans">{service.desc}</p>
+                  <div className="pt-2">
+                    <Link href="/usage" className="inline-flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider hover:gap-3 transition-all">
+                      Explore Technical Spec <MoveRight size={14} />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-32 bg-slate-900 text-white text-center">
-         <div className="container mx-auto px-6">
-            <h2 className="text-4xl md:text-6xl font-black mb-16 tracking-tight">We Love Moving Boxes</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-               <div>
-                  <p className="text-5xl font-black text-primary mb-2">50</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-white/50">States Covered</p>
-               </div>
-               <div>
-                  <p className="text-5xl font-black text-primary mb-2">15M+</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-white/50">LBS Shipped</p>
-               </div>
-               <div>
-                  <p className="text-5xl font-black text-primary mb-2">24/7</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-white/50">Support</p>
-               </div>
-               <div>
-                  <p className="text-5xl font-black text-primary mb-2">100%</p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-white/50">Reliable</p>
-               </div>
-            </div>
-         </div>
-      </section>
-
-      {/* Simple FAQ */}
-      <section className="py-32 bg-slate-50">
+      {/* How Telemetry Works Section */}
+      <section className="py-28 bg-[#090d16] relative border-t border-white/10">
         <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-black text-slate-900 mb-12 text-center tracking-tight">Common Questions</h2>
-            <div className="bg-white rounded-3xl shadow-xl p-10 space-y-2 border border-slate-100">
-              <FAQItem
-                question="How much does it cost?"
-                answer="Prices depend on how heavy your box is in lbs and how far it's going. You can get a free price check right now on our home page."
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="relative h-[550px] rounded-3xl overflow-hidden border border-cyan-500/30 shadow-2xl group">
+              <Image
+                src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1000"
+                alt="Telemetry Operations"
+                fill
+                className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
               />
-              <FAQItem
-                 question="How do I track my stuff?"
-                 answer="Just put your tracking number into the box on our website. We'll show you exactly where your package is on a map."
-               />
-               <FAQItem
-                 question="Do you pick up from my house?"
-                 answer="Yes! You can schedule a pickup and our driver will come right to your front door to take your package."
-               />
-               <FAQItem
-                 question="What if my package is lost?"
-                 answer="We have a money-back guarantee and every shipment includes basic insurance for your peace of mind."
-               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8 p-6 rounded-2xl bg-[#0f172a]/90 backdrop-blur-xl border border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400 text-xs font-mono font-bold uppercase">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  SATELLITE SYNC ONLINE
+                </div>
+                <p className="text-white font-bold text-lg">Continuous GPS Route Monitoring</p>
+                <p className="text-slate-400 text-xs font-mono">Latitude / Longitude updates broadcasted directly to recipient portal.</p>
+              </div>
+            </div>
+
+            <div className="space-y-10">
+              <div className="space-y-3">
+                <span className="text-xs font-mono font-bold uppercase tracking-[0.3em] text-cyan-400">TELEMETRY PROTOCOL</span>
+                <h2 className="text-4xl md:text-5xl font-black font-display text-white tracking-tight">Four-Stage Precision Tracking</h2>
+              </div>
+
+              <div className="space-y-6">
+                {[
+                  { step: "01", title: "Quantum Code Assignment", desc: "Every package receives an encrypted tracking code (e.g. VTX948210394) linked to real-time manifest data." },
+                  { step: "02", title: "Automated Hub Scanning", desc: "Optical laser scanners at transit hubs record timestamped entry and exit vectors." },
+                  { step: "03", title: "Satellite GPS Telemetry", desc: "En-route carriers stream location data every 3 seconds directly to your map dashboard." },
+                  { step: "04", title: "Verified Handover", desc: "Digital recipient signature verification confirms final delivery completion." }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-6 p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-colors group">
+                    <span className="text-lg font-mono font-black text-cyan-400 px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 shrink-0">
+                      {item.step}
+                    </span>
+                    <div className="space-y-1">
+                      <h4 className="text-lg font-bold font-display text-white group-hover:text-cyan-400 transition-colors">{item.title}</h4>
+                      <p className="text-slate-400 text-xs leading-relaxed font-sans">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <Link
+                  href="/quote"
+                  className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-400 to-indigo-500 text-[#090d16] font-display font-black text-sm px-8 py-4 rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(0,242,254,0.4)]"
+                >
+                  Generate Shipping Quote <MoveRight size={18} />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-32 bg-primary text-center">
-         <div className="container mx-auto px-6">
-            <h2 className="text-4xl md:text-7xl font-black text-white tracking-tight mb-12">Start Your Shipment Today</h2>
-            <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-               <Link href="/signup" className="bg-white text-primary px-12 py-6 rounded-full font-black text-lg shadow-2xl hover:bg-slate-900 hover:text-white transition-all">
-                  Create Free Account
-               </Link>
-               <Link href="/contact" className="bg-transparent border-2 border-white text-white px-12 py-6 rounded-full font-black text-lg hover:bg-white hover:text-primary transition-all">
-                  Call Our Team
-               </Link>
-            </div>
-         </div>
+      {/* FAQ Section */}
+      <section className="py-28 bg-[#090d16] relative border-t border-white/10">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="text-center mb-16 space-y-3">
+            <span className="text-xs font-mono font-bold uppercase tracking-[0.3em] text-cyan-400">COMMAND SUPPORT</span>
+            <h2 className="text-4xl md:text-5xl font-black font-display text-white tracking-tight">Frequently Asked Questions</h2>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[#0f172a]/80 border border-white/10 shadow-2xl">
+            <FAQItem
+              question="How do I inspect a shipment telemetry code?"
+              answer="Simply enter your tracking code (e.g., VTX948210394) into the search bar at the top of the page. You can also click any of our demo sample chips for an instant preview."
+            />
+            <FAQItem
+              question="What is the precision of your live satellite map?"
+              answer="Our live map tracks carrier coordinates with sub-meter GPS accuracy, updating vehicle velocity, current milestone, and estimated arrival in real time."
+            />
+            <FAQItem
+              question="Can I schedule a home or corporate pickup?"
+              answer="Yes! Registered account holders can request an automated driver pickup through our client portal, specifying package dimensions and desired pickup window."
+            />
+            <FAQItem
+              question="Are high-value goods insured during transit?"
+              answer="All shipments dispatched via Zefack Track include automatic base insurance up to $10,000, with optional extended coverage available upon request."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Banner */}
+      <section className="py-24 relative overflow-hidden bg-gradient-to-r from-cyan-900/40 via-indigo-900/40 to-violet-900/40 border-t border-cyan-500/30">
+        <div className="container mx-auto px-6 text-center relative z-10 space-y-8">
+          <h2 className="text-4xl md:text-6xl font-black font-display text-white tracking-tight">
+            Ready to Dispatch Your Next Freight Order?
+          </h2>
+          <p className="text-slate-300 text-base max-w-2xl mx-auto font-sans">
+            Join thousands of modern enterprises using Zefack Track for zero-latency freight dispatch and satellite route surveillance.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <Link
+              href="/signup"
+              className="bg-cyan-400 hover:bg-white text-[#090d16] font-display font-black text-sm px-10 py-4.5 rounded-xl transition-all shadow-[0_0_30px_rgba(0,242,254,0.5)]"
+            >
+              Create Dispatch Account
+            </Link>
+            <Link
+              href="/contact"
+              className="bg-white/5 hover:bg-white/10 text-white font-display font-bold text-sm px-10 py-4.5 rounded-xl border border-white/20 transition-all"
+            >
+              Speak to Telemetry Desk
+            </Link>
+          </div>
+        </div>
       </section>
     </main>
   );
 }
+

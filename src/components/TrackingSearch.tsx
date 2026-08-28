@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Package, MapPin, Truck, Clock, AlertCircle, User, Calendar, FileText, Mail, Phone, Copy, Check, Radar, Zap } from "lucide-react";
+import { Search, Package, MapPin, Truck, Clock, AlertCircle, User, Calendar, FileText, Mail, Phone, Copy, Check, Radar, Zap, ShieldCheck, ArrowRight, Download, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Shipment, ShipmentUpdate } from "@/types";
@@ -16,15 +16,18 @@ export default function TrackingSearch() {
     const [error, setError] = useState<string | null>(null);
     const [isCopying, setIsCopying] = useState(false);
 
+    // Preset sample codes for instant demo testing
+    const sampleTrackingCodes = ["VTX948210394", "VTX104928172"];
+
     const handleCopy = (id: string) => {
         navigator.clipboard.writeText(id);
         setIsCopying(true);
         setTimeout(() => setIsCopying(false), 2000);
     };
 
-    const handleSearch = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!trackingNumber.trim()) return;
+    const performSearch = async (query: string) => {
+        const cleanQuery = query.trim();
+        if (!cleanQuery) return;
 
         setIsSearching(true);
         setResult(null);
@@ -34,22 +37,22 @@ export default function TrackingSearch() {
             const { data, error: sbError } = await supabase
                 .from('shipments')
                 .select('*')
-                .eq('tracking_number', trackingNumber.trim())
+                .eq('tracking_number', cleanQuery)
                 .eq('is_deleted', false)
                 .single();
 
             if (sbError) {
                 if (sbError.code === 'PGRST116') {
-                    // Not found, try fallback for demo
+                    // Not found in Supabase, search localStorage fallback
                     const saved = localStorage.getItem("swiftlink_shipments");
                     const localShipments: Shipment[] = saved ? JSON.parse(saved) : [];
                     const found = localShipments.find(s =>
-                        s.tracking_number.toLowerCase() === trackingNumber.trim().toLowerCase() && !s.is_deleted
+                        s.tracking_number.toLowerCase() === cleanQuery.toLowerCase() && !s.is_deleted
                     );
                     if (found) {
                         setResult(found);
                     } else {
-                        setError("TRACKING NUMBER NOT FOUND. PLEASE CHECK AND TRY AGAIN.");
+                        setError(`TELEMETRY CODE "${cleanQuery}" NOT REGISTERED IN ACTIVE REPOSITORY.`);
                     }
                 } else {
                     throw sbError;
@@ -60,248 +63,292 @@ export default function TrackingSearch() {
         } catch (err) {
             const errorObj = err as { message?: string };
             console.error(errorObj);
-            setError("COULD NOT CONNECT TO OUR SYSTEM. PLEASE CHECK YOUR INTERNET.");
+            setError("TELEMETRY SATELLITE UPLINK TEMPORARILY UNREACHABLE. RE-TRYING CONNECTION...");
         } finally {
             setIsSearching(false);
         }
     };
 
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        performSearch(trackingNumber);
+    };
+
+    const handleSampleClick = (code: string) => {
+        setTrackingNumber(code);
+        performSearch(code);
+    };
+
     return (
         <div className="w-full">
-            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-0 relative group shadow-2xl">
-                <div className="relative flex-grow">
-                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <Radar size={20} className="text-slate-300 group-focus-within:text-primary transition-colors" />
+            {/* Telemetry Input Box */}
+            <form onSubmit={handleSearchSubmit} className="relative group">
+                <div className="flex flex-col md:flex-row items-stretch gap-3 p-3 bg-[#0f172a]/90 backdrop-blur-2xl border border-cyan-500/30 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-focus-within:border-cyan-400 group-focus-within:shadow-[0_0_30px_rgba(0,242,254,0.3)] transition-all duration-500">
+                    <div className="relative flex-grow flex items-center">
+                        <div className="absolute left-5 flex items-center pointer-events-none text-cyan-400">
+                            <Radar size={22} className="animate-spin-slow" />
+                        </div>
+                        <input
+                            type="text"
+                            value={trackingNumber}
+                            onChange={(e) => {
+                                setTrackingNumber(e.target.value);
+                                if (error) setError(null);
+                            }}
+                            placeholder="ENTER TRACKING CODE (e.g. VTX948210394)..."
+                            className="w-full bg-transparent py-4 pl-14 pr-4 text-white text-sm md:text-base font-mono font-extrabold uppercase tracking-wider focus:outline-none placeholder:text-slate-500 placeholder:normal-case placeholder:font-sans placeholder:font-medium"
+                        />
                     </div>
-                    <input
-                        type="text"
-                        value={trackingNumber}
-                        onChange={(e) => {
-                            setTrackingNumber(e.target.value);
-                            if (error) setError(null);
-                        }}
-                        placeholder="ENTER YOUR TRACKING NUMBER..."
-                        className="w-full bg-slate-50 border border-slate-200 rounded-sm py-6 px-8 pl-14 text-sm font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-slate-300 outline-none"
-                    />
+
+                    <button
+                        type="submit"
+                        disabled={isSearching}
+                        className="bg-gradient-to-r from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-[#090d16] font-display font-black text-xs uppercase tracking-[0.2em] px-8 py-4 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shrink-0 shadow-[0_0_20px_rgba(0,242,254,0.4)]"
+                    >
+                        {isSearching ? (
+                            <>
+                                <Zap size={16} className="animate-spin" />
+                                SCANNING...
+                            </>
+                        ) : (
+                            <>
+                                Inspect Telemetry
+                                <ArrowRight size={16} />
+                            </>
+                        )}
+                    </button>
                 </div>
-                <button
-                    type="submit"
-                    disabled={isSearching}
-                    className="w-full md:w-auto bg-slate-900 hover:bg-primary text-white px-12 py-6 rounded-sm font-black text-xs uppercase tracking-[0.3em] transition-all disabled:opacity-50 whitespace-nowrap shadow-md"
-                >
-                    {isSearching ? "SEARCHING..." : "TRACK NOW"}
-                </button>
             </form>
 
+            {/* Quick Demo Sample Code Chips */}
+            <div className="mt-4 flex flex-wrap items-center gap-2 px-2">
+                <span className="text-[11px] font-mono text-slate-400 font-semibold flex items-center gap-1">
+                    <Sparkles size={12} className="text-cyan-400" /> Demo Sample Codes:
+                </span>
+                {sampleTrackingCodes.map((code) => (
+                    <button
+                        key={code}
+                        type="button"
+                        onClick={() => handleSampleClick(code)}
+                        className="px-3 py-1 rounded-lg bg-white/5 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-400 hover:text-[#090d16] font-mono text-xs font-bold transition-all"
+                    >
+                        {code}
+                    </button>
+                ))}
+            </div>
+
+            {/* Error Message */}
             <AnimatePresence>
                 {error && (
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mt-6 p-8 rounded-sm bg-red-50 border border-red-100 flex items-start gap-6"
+                        className="mt-6 p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-4"
                     >
-                        <AlertCircle className="text-red-500 shrink-0" size={24} />
+                        <AlertCircle className="text-rose-400 shrink-0 mt-0.5" size={20} />
                         <div>
-                            <p className="font-black text-red-500 text-[10px] uppercase tracking-widest">ERROR</p>
-                            <p className="text-slate-600 mt-2 font-bold text-sm uppercase tracking-tight">{error}</p>
+                            <p className="font-mono text-xs font-bold text-rose-400 uppercase tracking-wider">TELEMETRY WARNING</p>
+                            <p className="text-slate-300 mt-1 font-sans text-sm">{error}</p>
                         </div>
                     </motion.div>
                 )}
 
+                {/* Live Telemetry Result Card */}
                 {result && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-12 bg-white rounded-sm border border-slate-200 shadow-2xl overflow-hidden"
+                        className="mt-10 bg-[#0f172a]/95 backdrop-blur-2xl rounded-3xl border border-cyan-500/30 shadow-[0_25px_60px_rgba(0,0,0,0.8)] overflow-hidden"
                     >
-                        {/* Top Banner Status */}
-                        <div className="bg-slate-900 p-10 flex flex-wrap justify-between items-center gap-8 border-b border-slate-800">
-                             <div className="space-y-2">
-                                <p className="text-primary text-[10px] font-black uppercase tracking-[0.4em]">SHIPMENT STATUS</p>
-                                <div className="flex items-center gap-4">
-                                    <h2 className="text-4xl font-black text-white tracking-tighter uppercase">{result.current_status || "PROCESSING"}</h2>
-                                    <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(0,242,255,0.8)]" />
+                        {/* Header Banner */}
+                        <div className="bg-[#090d16] p-8 md:p-10 flex flex-wrap justify-between items-center gap-6 border-b border-cyan-500/20">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(0,242,254,0.9)]" />
+                                    <p className="text-cyan-400 text-xs font-mono font-bold uppercase tracking-[0.25em]">LIVE SHIPMENT TELEMETRY</p>
                                 </div>
-                             </div>
-                             <div className="flex flex-col items-end gap-2">
-                                <p className="text-white/40 text-[9px] font-black uppercase tracking-widest text-right">TRACKING NUMBER</p>
-                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-sm group/copy">
-                                    <span className="text-white font-mono font-black text-lg">{result.tracking_number}</span>
+                                <h2 className="text-3xl md:text-4xl font-black font-display text-white tracking-tight">
+                                    {result.current_status || "IN TRANSIT"}
+                                </h2>
+                            </div>
+
+                            <div className="flex flex-col items-start sm:items-end gap-2">
+                                <p className="text-slate-400 text-[10px] font-mono font-bold uppercase tracking-wider">TELEMETRY TRACKING CODE</p>
+                                <div className="flex items-center gap-3 bg-white/5 border border-cyan-500/30 px-4 py-2 rounded-xl">
+                                    <span className="text-cyan-400 font-mono font-extrabold text-base md:text-lg tracking-wider">{result.tracking_number}</span>
                                     <button
                                         onClick={() => handleCopy(result.tracking_number)}
-                                        className={`p-1.5 transition-all ${isCopying ? 'text-primary' : 'text-white/20 hover:text-white'}`}
+                                        className={`p-1.5 rounded-lg transition-all ${isCopying ? 'text-emerald-400 bg-emerald-500/20' : 'text-slate-400 hover:text-white hover:bg-white/10'}`}
+                                        title="Copy Tracking ID"
                                     >
                                         {isCopying ? <Check size={16} /> : <Copy size={16} />}
                                     </button>
                                 </div>
-                             </div>
+                            </div>
                         </div>
 
-                        <div className="p-10 md:p-16">
-                            {/* Interactive Journey Pulse */}
-                            <div className="mb-20 relative px-4">
-                                <div className="flex flex-col md:flex-row items-center gap-12 justify-between relative z-10">
-                                    <div className="text-center md:text-left space-y-2">
-                                       <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">SHIPPED FROM</p>
-                                       <p className="text-slate-900 text-xl font-black uppercase tracking-tight">{result.origin}</p>
+                        <div className="p-8 md:p-12 space-y-12">
+                            {/* Route Indicator */}
+                            <div className="p-8 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden">
+                                <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                                    <div className="text-center md:text-left space-y-1">
+                                        <p className="text-slate-400 text-[10px] font-mono font-bold uppercase tracking-widest">ORIGIN HUB</p>
+                                        <p className="text-white text-xl font-bold font-display">{result.origin}</p>
                                     </div>
 
-                                    <div className="flex-1 w-full max-w-2xl relative">
-                                        <div className="h-0.5 bg-slate-100 w-full relative">
+                                    <div className="flex-1 w-full max-w-lg space-y-3">
+                                        <div className="h-1 bg-white/10 w-full rounded-full relative overflow-hidden">
                                             <motion.div 
                                                 initial={{ width: 0 }}
-                                                animate={{ width: "65%" }}
+                                                animate={{ width: "70%" }}
                                                 transition={{ duration: 1.5, ease: "easeOut" }}
-                                                className="h-full bg-primary shadow-sm"
+                                                className="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 shadow-[0_0_12px_rgba(0,242,254,0.8)]"
                                             />
-                                            <div className="absolute top-1/2 left-[65%] -translate-y-1/2 w-3 h-3 bg-slate-900 border border-primary rotate-45 shadow-lg" />
                                         </div>
-                                        <div className="flex justify-center mt-6">
-                                            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
-                                                <Zap size={14} className="animate-pulse" />
-                                                ON ITS WAY
-                                            </div>
+                                        <div className="flex items-center justify-center gap-2 text-xs font-mono font-bold text-cyan-400">
+                                            <Zap size={14} className="animate-pulse" />
+                                            EN ROUTE - REAL-TIME SATELLITE RELAY
                                         </div>
                                     </div>
 
-                                    <div className="text-center md:text-right space-y-2">
-                                       <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">DESTINATION</p>
-                                       <p className="text-slate-900 text-xl font-black uppercase tracking-tight">{result.destination}</p>
+                                    <div className="text-center md:text-right space-y-1">
+                                        <p className="text-slate-400 text-[10px] font-mono font-bold uppercase tracking-widest">DESTINATION HUB</p>
+                                        <p className="text-white text-xl font-bold font-display">{result.destination}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Live Map Route & Moving Package */}
-                            <div className="mb-20 h-[500px] w-full rounded-sm overflow-hidden shadow-2xl relative border border-slate-200 group">
-                                <div className="absolute top-8 left-8 z-[400] bg-slate-900 text-white px-6 py-3 rounded-sm shadow-2xl flex items-center gap-4 border border-white/10">
-                                    <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(0,242,255,0.8)]" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">LIVE ROUTE & PACKAGE SURVEILLANCE</span>
+                            {/* Live GPS Map Window */}
+                            <div className="h-[420px] w-full rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl relative group">
+                                <div className="absolute top-4 left-4 z-[400] bg-[#090d16]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-cyan-500/40 flex items-center gap-3">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(0,242,254,0.9)]" />
+                                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">LIVE GPS SATELLITE FEED</span>
                                 </div>
-                                <div className="absolute inset-0">
-                                    <LiveMap
-                                        lat={result.latitude}
-                                        lng={result.longitude}
-                                        originLat={result.origin_lat}
-                                        originLng={result.origin_lng}
-                                        originName={result.origin}
-                                        destinationLat={result.destination_lat}
-                                        destinationLng={result.destination_lng}
-                                        destinationName={result.destination}
-                                        currentLocationName={result.updates?.[0]?.location || result.origin}
-                                    />
-                                </div>
+                                <LiveMap
+                                    lat={result.latitude}
+                                    lng={result.longitude}
+                                    originLat={result.origin_lat}
+                                    originLng={result.origin_lng}
+                                    originName={result.origin}
+                                    destinationLat={result.destination_lat}
+                                    destinationLng={result.destination_lng}
+                                    destinationName={result.destination}
+                                    currentLocationName={result.updates?.[0]?.location || result.origin}
+                                />
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-                                <div className="lg:col-span-2 space-y-12">
-                                    {/* Sender and Receiver Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                        <div className="space-y-6">
-                                            <div className="flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-[0.3em] border-b border-slate-100 pb-4">
-                                                <User size={16} className="text-primary" />
-                                                SENDER
+                            {/* Metadata Grid */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div className="lg:col-span-2 space-y-8">
+                                    {/* Sender & Receiver Card */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                                            <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider pb-3 border-b border-white/10">
+                                                <User size={16} /> SENDER SPECIFICATION
                                             </div>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">NAME</p>
-                                                    <p className="font-black text-slate-900 text-lg uppercase tracking-tight">{result.sender_name || 'N/A'}</p>
-                                                </div>
-                                                <div className="flex items-center gap-3 text-slate-500 font-bold text-xs uppercase tracking-tight">
-                                                    <Mail size={14} className="text-primary" />
-                                                    {result.sender_email || 'NOT PROVIDED'}
-                                                </div>
+                                            <div className="space-y-2">
+                                                <p className="text-xs text-slate-400 font-mono">CLIENT NAME</p>
+                                                <p className="text-white font-bold text-base">{result.sender_name || 'N/A'}</p>
+                                                <p className="text-slate-400 text-xs flex items-center gap-2 pt-1">
+                                                    <Mail size={13} className="text-cyan-400" />
+                                                    {result.sender_email || 'N/A'}
+                                                </p>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-6">
-                                            <div className="flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-[0.3em] border-b border-slate-100 pb-4">
-                                                <MapPin size={16} className="text-primary" />
-                                                RECIPIENT
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                                            <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider pb-3 border-b border-white/10">
+                                                <MapPin size={16} /> DESTINATION DETAILS
                                             </div>
-                                            <div className="space-y-4">
-                                                <div>
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">NAME</p>
-                                                    <p className="font-black text-slate-900 text-lg uppercase tracking-tight">{result.recipient_name || 'N/A'}</p>
-                                                </div>
-                                                <div className="p-5 bg-slate-50 border-l-2 border-primary text-[10px] font-bold text-slate-500 uppercase tracking-tight leading-relaxed italic">
-                                                    {result.recipient_address || 'ADDRESS TBD'}
-                                                </div>
+                                            <div className="space-y-2">
+                                                <p className="text-xs text-slate-400 font-mono">RECIPIENT NAME</p>
+                                                <p className="text-white font-bold text-base">{result.recipient_name || 'N/A'}</p>
+                                                <p className="text-slate-300 text-xs leading-relaxed pt-1 bg-white/5 p-3 rounded-xl border border-white/5 font-mono">
+                                                    {result.recipient_address || 'Address registered'}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Description */}
-                                    <div className="p-10 bg-slate-50 border border-slate-100 rounded-sm space-y-6">
-                                        <div className="flex items-center gap-3 text-slate-900 font-black text-[10px] uppercase tracking-[0.3em]">
-                                            <FileText size={16} className="text-primary" />
-                                            PACKAGE DETAILS
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                                        <div className="flex items-center gap-2 text-slate-300 text-xs font-mono font-bold uppercase tracking-wider">
+                                            <FileText size={15} className="text-cyan-400" /> FREIGHT CONTENTMANIFEST
                                         </div>
-                                        <p className="text-lg font-bold text-slate-500 leading-relaxed uppercase tracking-tight">
-                                            {result.description || 'No additional description provided.'}
+                                        <p className="text-slate-300 text-sm leading-relaxed font-sans">
+                                            {result.description || 'Standard high-value express cargo item.'}
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Sidebar Metrics */}
-                                <div className="space-y-8">
-                                    <div className="bg-slate-50 p-10 rounded-sm text-slate-900 space-y-8 shadow-sm border border-slate-200">
-                                        <div className="flex items-center gap-3 font-black text-[10px] uppercase tracking-[0.3em] border-b border-slate-200 pb-6 text-primary">
-                                            <Package size={18} />
-                                            INFO
+                                <div className="space-y-6">
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-5">
+                                        <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider pb-4 border-b border-white/10">
+                                            <Package size={16} /> CARGO MATRIX
                                         </div>
-                                        <div className="space-y-6">
-                                            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-                                                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">WEIGHT</span>
-                                                <span className="font-black text-primary uppercase text-sm">{result.weight} LBS</span>
+                                        <div className="space-y-4 text-xs font-mono">
+                                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                                <span className="text-slate-400">WEIGHT</span>
+                                                <span className="text-white font-bold">{result.weight} LBS</span>
                                             </div>
-                                            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-                                                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">TYPE</span>
-                                                <span className="font-black uppercase text-sm">{result.item_type || 'GENERAL'}</span>
+                                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                                <span className="text-slate-400">SERVICE</span>
+                                                <span className="text-cyan-400 font-bold">{result.item_type || 'EXPRESS'}</span>
                                             </div>
-                                            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-                                                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">ETA</span>
-                                                <span className="font-black text-primary uppercase text-sm">{result.estimated_delivery ? new Date(result.estimated_delivery).toLocaleDateString() : 'TBD'}</span>
+                                            <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                                                <span className="text-slate-400">EST. DELIVERY</span>
+                                                <span className="text-white font-bold">
+                                                    {result.estimated_delivery ? new Date(result.estimated_delivery).toLocaleDateString() : 'TBD'}
+                                                </span>
                                             </div>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-slate-400 text-[9px] font-black uppercase tracking-widest">PAYMENT</span>
-                                                <span className="font-black uppercase text-[10px] bg-primary/10 px-3 py-1 rounded-sm text-primary border border-primary/20">{result.payment_status || 'PAID'}</span>
+                                                <span className="text-slate-400">STATUS</span>
+                                                <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
+                                                    {result.payment_status || 'PAID'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <button className="w-full bg-white border border-slate-200 text-slate-400 py-5 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-slate-50 hover:text-slate-900 transition-all shadow-md">
-                                        DOWNLOAD PDF RECEIPT
+                                    <button 
+                                        onClick={() => window.print()} 
+                                        className="w-full bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                                    >
+                                        <Download size={15} /> Export Waybill PDF
                                     </button>
                                 </div>
                             </div>
 
-                            {/* History Timeline */}
-                            <div className="mt-32 space-y-16 relative before:absolute before:left-[19px] before:top-4 before:bottom-4 before:w-[1px] before:bg-slate-100">
-                                <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.5em] mb-12 flex items-center gap-4">
-                                    <div className="w-10 h-[1px] bg-primary" />
-                                    DELIVERY HISTORY
+                            {/* Delivery History Log */}
+                            <div className="space-y-6 pt-6 border-t border-white/10">
+                                <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest flex items-center gap-3">
+                                    <span className="w-8 h-[2px] bg-cyan-400" />
+                                    TELEMETRY AUDIT TRAIL
                                 </h3>
-                                {result.updates.map((update: ShipmentUpdate, idx: number) => (
-                                    <div key={idx} className="relative pl-16 group">
-                                        <div className={`absolute left-0 top-0 w-10 h-10 flex items-center justify-center border transition-all duration-500 ${idx === 0 ? 'bg-primary border-primary text-white rotate-45 shadow-lg' : 'bg-white border-slate-200 text-slate-300'}`}>
-                                            <div className={idx === 0 ? '-rotate-45' : ''}>
-                                                {idx === 0 ? <Zap size={18} /> : <Clock size={16} />}
+
+                                <div className="space-y-6 pl-4 border-l border-white/10 ml-2">
+                                    {result.updates && result.updates.length > 0 ? (
+                                        result.updates.map((update: ShipmentUpdate, idx: number) => (
+                                            <div key={idx} className="relative pl-6 space-y-1.5 group">
+                                                <div className={`absolute -left-[21px] top-1.5 w-3 h-3 rounded-full border-2 ${idx === 0 ? 'bg-cyan-400 border-cyan-400 shadow-[0_0_10px_rgba(0,242,254,0.9)]' : 'bg-[#090d16] border-slate-600'}`} />
+                                                <div className="flex flex-wrap items-center gap-3">
+                                                    <p className={`font-mono font-bold text-sm uppercase ${idx === 0 ? 'text-cyan-400' : 'text-white'}`}>{update.status}</p>
+                                                    <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2.5 py-0.5 rounded-md border border-white/5">
+                                                        {new Date(update.created_at).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                                <p className="text-slate-300 text-xs font-sans leading-relaxed">{update.description}</p>
+                                                <p className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+                                                    <MapPin size={12} className="text-cyan-400" /> Location: {update.location}
+                                                </p>
                                             </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <div className="flex flex-wrap items-center gap-6">
-                                                <p className={`font-black text-xl uppercase tracking-tighter ${idx === 0 ? 'text-slate-900' : 'text-slate-300'}`}>{update.status}</p>
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 border border-slate-100">{new Date(update.created_at).toLocaleString()}</span>
-                                            </div>
-                                            <p className="text-slate-500 font-bold text-sm uppercase tracking-tight leading-relaxed max-w-4xl">{update.description}</p>
-                                            <div className="flex items-center gap-2 text-primary font-black text-[9px] uppercase tracking-[0.3em] pt-2">
-                                                <MapPin size={12} />
-                                                {update.location}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-slate-500 font-mono italic">Initial dispatch log registered.</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -310,3 +357,4 @@ export default function TrackingSearch() {
         </div>
     );
 }
+
