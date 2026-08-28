@@ -1,13 +1,44 @@
 "use client";
 
-import { ShieldCheck, Globe, Zap, ChevronDown, MapPin, Search, Package, Truck, Ship, Plane, Clock, Phone, Mail, ArrowRight, Check, Train, Box, Award, Users, BarChart3, Layers, Compass, Cpu, Stethoscope, Sun, Factory, ShoppingBag, Quote, RefreshCw } from "lucide-react";
-import Image from "next/image";
+import { ShieldCheck, Globe, Zap, ChevronDown, MapPin, Search, Package, Truck, Ship, Plane, Clock, Phone, Mail, ArrowRight, Check, Train, Box, Award, Users, BarChart3, Layers, Compass, Cpu, Stethoscope, Sun, Factory, ShoppingBag, Quote, Calendar, Newspaper, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import TrackingSearch from "@/components/TrackingSearch";
 
-// FAQ Accordion Item Component
+// --- Custom Counter Component for Statistics ---
+const AnimatedCounter = ({ end, duration = 2 }: { end: number, duration?: number }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView) {
+      let startTime: number;
+      let animationFrame: number;
+
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+        // easeOutQuart
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+        
+        setCount(Math.floor(end * easeOut));
+        
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        }
+      };
+      
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }
+  }, [inView, end, duration]);
+
+  return <span ref={ref}>{count}</span>;
+};
+
+// --- FAQ Component ---
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -47,6 +78,24 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
   );
 };
 
+// --- Standard Animation Props based on User Spec ---
+// "starts slightly below final position with 0 opacity, fades in sliding upward"
+// "smooth ease-out transition of 600–800ms"
+// "triggered when element enters viewport"
+const revealProps: any = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.7, ease: "easeOut" }
+};
+
+const staggerRevealProps = (delay: number): any => ({
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.7, ease: "easeOut", delay }
+});
+
 export default function Home() {
   const quickFeaturesRef = useRef<HTMLDivElement>(null);
 
@@ -55,30 +104,31 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28 overflow-x-hidden">
-      {/* 1. HERO SECTION - Clean 1:1 Parity with theglobalcargo.com */}
+    <div className="bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28 overflow-x-hidden">
+      
+      {/* 1. HERO SECTION - Animated Parallax Experience */}
       <section className="relative min-h-[85vh] flex flex-col justify-center py-16 md:py-24 overflow-hidden bg-slate-950 text-white">
-        {/* Bright Background Cargo Container Image with Subtle Light Gradient Overlay */}
-        <div className="absolute inset-0 z-0">
+        <motion.div 
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          className="absolute inset-0 z-0"
+        >
           <img
             src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
             alt="SwiftLink Global Cargo Shipping"
             className="w-full h-full object-cover opacity-85"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-blue-950/40" />
-        </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/50 to-blue-950/40" />
+        </motion.div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full pt-4 pb-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            {/* Left Hero Copy */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="lg:col-span-7 space-y-6"
-            >
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg border border-blue-400/30">
+            
+            {/* Left Hero Copy - Staggered Reveals */}
+            <div className="lg:col-span-7 space-y-6">
+              <motion.div {...staggerRevealProps(0.1)} className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600/90 backdrop-blur-sm text-white font-extrabold text-xs uppercase tracking-wider shadow-lg border border-blue-400/30">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
@@ -86,52 +136,40 @@ export default function Home() {
                   Locate Your Parcel Anywhere Anytime
                 </div>
 
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]">
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
                   Welcome to Your Comprehensive <br className="hidden sm:inline" />
-                  <span className="text-blue-400 bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-blue-500 drop-shadow-sm">
                     Shipping and Logistics
                   </span> Solution!
                 </h1>
 
-                <p className="text-white text-base md:text-lg font-bold max-w-2xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                <p className="text-slate-200 text-base md:text-xl font-medium max-w-2xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                   We offer a range of services including land, sea, and air freight, along with warehousing solutions. Let us simplify your logistics needs.
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  href="/usage"
-                  className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs md:text-sm px-7 py-3.5 rounded-xl shadow-xl transition-all flex items-center gap-2.5 group cursor-pointer"
-                >
+              <motion.div {...staggerRevealProps(0.3)} className="flex flex-wrap gap-4 pt-2">
+                <Link href="/usage" className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-xs md:text-sm px-7 py-4 rounded-xl shadow-xl transition-all flex items-center gap-2.5 group cursor-pointer border border-blue-500/50">
                   <span>View Services</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link
-                  href="/quote"
-                  className="bg-slate-900/80 hover:bg-slate-900 text-white font-black text-xs md:text-sm px-7 py-3.5 rounded-xl border border-white/40 backdrop-blur-md transition-all cursor-pointer shadow-xl"
-                >
+                <Link href="/quote" className="bg-white/10 hover:bg-white/20 text-white font-black text-xs md:text-sm px-7 py-4 rounded-xl border border-white/30 backdrop-blur-md transition-all cursor-pointer shadow-xl">
                   Get a Free Quote
                 </Link>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
-            {/* Right Hero Consignment Search Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="lg:col-span-5"
-            >
-              <div className="bg-white/95 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/90 shadow-2xl text-slate-900 space-y-4">
-                <div className="space-y-1 border-b border-slate-100 pb-3">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+            {/* Right Hero Tracking Box - Smooth Entrance */}
+            <motion.div {...staggerRevealProps(0.4)} className="lg:col-span-5">
+              <div className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl border border-white/90 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] text-slate-900 space-y-5">
+                <div className="space-y-1.5 border-b border-slate-100 pb-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2">
+                    <Zap size={14} className="text-blue-500" />
                     Enter the Consignment No.
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-black tracking-tight">Track Your Shipment</h3>
-                  <p className="text-slate-500 text-xs font-medium">Ex: 12345 or VTX948210394</p>
+                  <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Track Your Shipment</h3>
+                  <p className="text-slate-500 text-sm font-medium">Ex: 12345 or VTX948210394</p>
                 </div>
-
                 <TrackingSearch />
               </div>
             </motion.div>
@@ -142,27 +180,52 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="relative z-20 flex flex-col items-center justify-center pt-2 cursor-pointer"
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center justify-center cursor-pointer"
           onClick={scrollToQuickFeatures}
         >
-          <span className="text-[10px] font-black tracking-widest text-white uppercase drop-shadow mb-1 flex items-center gap-1">
-            <span>Scroll Down</span>
-            <ChevronDown size={12} className="animate-bounce text-blue-400" />
+          <span className="text-[10px] font-black tracking-widest text-white/80 uppercase mb-2 flex items-center gap-1">
+            Scroll Down
           </span>
-          <div className="w-5 h-8 rounded-full border-2 border-white/80 flex justify-center p-1 backdrop-blur-sm bg-slate-900/40">
+          <div className="w-5 h-8 rounded-full border-2 border-white/40 flex justify-center p-1 backdrop-blur-sm bg-slate-900/20">
             <motion.div
-              animate={{ y: [0, 10, 0] }}
+              animate={{ y: [0, 12, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1.5 h-2 rounded-full bg-blue-400"
+              className="w-1.5 h-1.5 rounded-full bg-blue-400"
             />
           </div>
         </motion.div>
       </section>
 
-      {/* 2. OVERLAPPING 3 QUICK FEATURE CARDS */}
-      <section ref={quickFeaturesRef} className="relative z-30 max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 2. [NEW] COMPANY STATISTICS SECTION */}
+      <section className="py-14 bg-white border-b border-slate-100 relative z-30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x-0 md:divide-x divide-slate-100">
+            {[
+              { label: "Offices Worldwide", value: 124, suffix: "+" },
+              { label: "Countries Served", value: 180, suffix: "" },
+              { label: "Professional Workers", value: 4500, suffix: "+" },
+              { label: "Years of Experience", value: 25, suffix: "+" },
+            ].map((stat, i) => (
+              <motion.div 
+                key={i}
+                {...staggerRevealProps(i * 0.1)}
+                className="text-center space-y-1 py-2"
+              >
+                <div className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight flex justify-center items-end gap-1">
+                  <AnimatedCounter end={stat.value} />
+                  <span className="text-blue-600 text-3xl md:text-4xl">{stat.suffix}</span>
+                </div>
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. QUICK FEATURE CARDS */}
+      <section ref={quickFeaturesRef} className="relative z-30 max-w-7xl mx-auto px-6 py-16 -mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
               title: "Supply Chain Solutions",
@@ -185,20 +248,17 @@ export default function Home() {
           ].map((card, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="bg-white p-7 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-blue-200 transition-all space-y-4 group"
+              {...staggerRevealProps(i * 0.15)}
+              className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 hover:shadow-2xl hover:border-blue-200 hover:-translate-y-2 transition-all duration-300 space-y-5 group"
             >
-              <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200 shadow-md">
-                <card.icon size={24} />
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+                <card.icon size={26} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{card.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed font-normal">
+              <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{card.title}</h3>
+              <p className="text-slate-500 text-sm leading-relaxed font-medium">
                 {card.desc}
               </p>
-              <Link href={card.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+              <Link href={card.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs uppercase tracking-wider group-hover:gap-3 transition-all pt-2">
                 Learn More <ArrowRight size={14} />
               </Link>
             </motion.div>
@@ -206,91 +266,85 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. DEDICATED "TRACK YOUR SHIPMENT" SECTION (1:1 Section Parity) */}
-      <section className="py-16 bg-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
-          <span className="text-xs font-black uppercase tracking-widest text-blue-200">REAL TIME CONSIGNMENT MONITORING</span>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight">Track Your Shipment</h2>
-          <p className="text-blue-100 text-sm sm:text-base max-w-2xl mx-auto font-medium">
+      {/* 4. DEDICATED TRACKING SECTION */}
+      <section className="py-24 bg-blue-600 text-white relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 opacity-10">
+           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        </div>
+
+        <motion.div {...revealProps} className="max-w-7xl mx-auto px-6 text-center space-y-6 relative z-10">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-blue-500/50 backdrop-blur-sm text-xs font-black uppercase tracking-widest text-white border border-blue-400/50">
+            REAL TIME CONSIGNMENT MONITORING
+          </span>
+          <h2 className="text-4xl md:text-6xl font-black tracking-tight">Track Your Shipment</h2>
+          <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
             Track your shipment easily! Enter your tracking number here to get real-time updates on your delivery status and GPS satellite coordinates.
           </p>
           
-          <div className="max-w-xl mx-auto pt-4">
-            <div className="bg-white p-4 rounded-2xl shadow-2xl text-slate-900">
+          <div className="max-w-xl mx-auto pt-8">
+            <div className="bg-white p-5 rounded-[2rem] shadow-2xl text-slate-900 border border-white/20">
               <TrackingSearch />
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* 4. DIVE INTO OUR COMPREHENSIVE SERVICE OFFERINGS (1:1 Section Parity) */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      {/* 5. ABOUT US - GLOBAL & LOCAL SERVICES */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+          <motion.div {...revealProps} className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <span className="text-xs font-black uppercase tracking-widest text-blue-600">WHO WE ARE</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
               Dive into Our Comprehensive Service Offerings
             </h2>
-            <p className="text-slate-600 text-base leading-relaxed">
-              At SwiftLink Logistics, we are more than just a shipping and logistics company – we are your trusted partner in navigating the complexities of global trade and commerce. With a rich history and a forward-thinking approach, we strive to redefine industry standards and deliver innovative solutions that propel your business forward.
+            <p className="text-slate-500 text-base leading-relaxed font-medium">
+              At SwiftLink Logistics, we are more than just a shipping and logistics company – we are your trusted partner in navigating the complexities of global trade and commerce. With a rich history and a forward-thinking approach.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Global Service */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl hover:border-blue-200 transition-all group"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
-                <Globe size={28} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <motion.div {...staggerRevealProps(0.1)} className="p-10 rounded-3xl bg-slate-50 border border-slate-100 space-y-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-110 transition-transform">
+                <Globe size={32} />
               </div>
-              <div className="space-y-3">
-                <h3 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">Global Service</h3>
+              <div className="space-y-4">
+                <h3 className="text-3xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">Global Service</h3>
                 <p className="text-slate-600 text-sm leading-relaxed font-medium">
                   Comprehensive international shipping solutions with a vast network covering multiple continents, expertise in customs clearance, and multimodal transportation options.
                 </p>
               </div>
-              <ul className="space-y-2.5 text-xs font-bold text-slate-700">
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Multimodal International Transit Corridors</li>
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Real-Time Satellite Waybill Surveillance</li>
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Automated Export Customs Clearance</li>
+              <ul className="space-y-3 pt-2 text-sm font-bold text-slate-700">
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Multimodal International Transit Corridors</li>
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Real-Time Satellite Waybill Surveillance</li>
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Automated Export Customs Clearance</li>
               </ul>
-              <div className="pt-2">
-                <Link href="/usage" className="inline-flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 font-extrabold text-xs px-6 py-3 rounded-xl shadow-md transition-all">
-                  Discover More <ArrowRight size={14} />
+              <div className="pt-4">
+                <Link href="/usage" className="inline-flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 font-extrabold text-xs uppercase tracking-wider px-7 py-4 rounded-xl shadow-md transition-all group-hover:px-8">
+                  Discover More <ArrowRight size={16} />
                 </Link>
               </div>
             </motion.div>
 
-            {/* Local Service */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 space-y-6 hover:shadow-xl hover:border-blue-200 transition-all group"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
-                <Compass size={28} />
+            <motion.div {...staggerRevealProps(0.2)} className="p-10 rounded-3xl bg-slate-50 border border-slate-100 space-y-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-16 h-16 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:scale-110 transition-transform">
+                <Compass size={32} />
               </div>
-              <div className="space-y-3">
-                <h3 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">Local Service</h3>
+              <div className="space-y-4">
+                <h3 className="text-3xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">Local Service</h3>
                 <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                  Reliable domestic shipping services with last-mile delivery, expedited options, strategically located regional distribution centers, and personalized customer support, along with active community engagement initiatives.
+                  Reliable domestic shipping services with last-mile delivery, expedited options, strategically located regional distribution centers, and personalized customer support.
                 </p>
               </div>
-              <ul className="space-y-2.5 text-xs font-bold text-slate-700">
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Door-to-Door Last-Mile Delivery Scans</li>
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Regional Climate-Controlled Distribution</li>
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Dedicated Local Courier Specialists</li>
+              <ul className="space-y-3 pt-2 text-sm font-bold text-slate-700">
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Door-to-Door Last-Mile Delivery Scans</li>
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Regional Climate-Controlled Distribution</li>
+                <li className="flex items-center gap-3"><Check size={18} className="text-blue-600 shrink-0" /> Dedicated Local Courier Specialists</li>
               </ul>
-              <div className="pt-2">
-                <Link href="/usage" className="inline-flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 font-extrabold text-xs px-6 py-3 rounded-xl shadow-md transition-all">
-                  Discover More <ArrowRight size={14} />
+              <div className="pt-4">
+                <Link href="/usage" className="inline-flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 font-extrabold text-xs uppercase tracking-wider px-7 py-4 rounded-xl shadow-md transition-all group-hover:px-8">
+                  Discover More <ArrowRight size={16} />
                 </Link>
               </div>
             </motion.div>
@@ -298,16 +352,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. EMPOWER YOUR BUSINESS WITH BETTER LOGISTICS (8 Services Grid) */}
-      <section className="py-20 bg-slate-100/70 border-t border-slate-200/60">
+      {/* 6. SERVICE PORTFOLIO (8 Cards) */}
+      <section className="py-24 bg-slate-100/50 border-t border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+          <motion.div {...revealProps} className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <span className="text-xs font-black uppercase tracking-widest text-blue-600">SERVICE PORTFOLIO</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
               Empower your business with better logistics
             </h2>
-            <p className="text-slate-600 text-base">Exploring Our Multifaceted Service Portfolio</p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -322,30 +375,28 @@ export default function Home() {
             ].map((service, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: (i % 4) * 0.08 }}
-                className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-slate-100 group flex flex-col justify-between"
+                {...staggerRevealProps((i % 4) * 0.15)}
+                className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 group flex flex-col justify-between"
               >
                 <div>
-                  <div className="relative h-44 overflow-hidden bg-slate-100">
+                  <div className="relative h-48 overflow-hidden bg-slate-100">
                     <img
                       src={service.img}
                       alt={service.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute top-4 left-4 w-10 h-10 bg-white/95 rounded-2xl flex items-center justify-center text-blue-600 shadow-md backdrop-blur-md">
-                      <service.icon size={20} />
+                    <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors duration-500" />
+                    <div className="absolute top-4 left-4 w-12 h-12 bg-white/95 rounded-2xl flex items-center justify-center text-blue-600 shadow-lg backdrop-blur-md group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                      <service.icon size={22} />
                     </div>
                   </div>
-                  <div className="p-6 space-y-2">
-                    <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors">{service.title}</h3>
-                    <p className="text-slate-500 text-xs leading-relaxed font-medium">{service.desc}</p>
+                  <div className="p-6 space-y-3">
+                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{service.title}</h3>
+                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{service.desc}</p>
                   </div>
                 </div>
-                <div className="px-6 pb-6 pt-1">
-                  <Link href={service.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all">
+                <div className="px-6 pb-6 pt-2">
+                  <Link href={service.href} className="inline-flex items-center gap-2 text-slate-400 font-extrabold text-xs uppercase tracking-wider group-hover:text-blue-600 group-hover:gap-3 transition-all">
                     Learn More <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -355,116 +406,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. COMPETITIVE ADVANTAGES TO THE LARGEST COMPANIES! */}
-      <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="lg:col-span-6 space-y-6"
-          >
-            <span className="text-xs font-black uppercase tracking-widest text-blue-400">EXCELLENCE & INNOVATION</span>
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-              Competitive Advantages To The Largest Companies!
-            </h2>
-            <p className="text-slate-300 text-sm md:text-base leading-relaxed font-medium">
+      {/* 7. COMPETITIVE ADVANTAGES */}
+      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <motion.div {...staggerRevealProps(0.1)} className="space-y-8">
+            <div className="space-y-4">
+              <span className="text-xs font-black uppercase tracking-widest text-blue-400 border border-blue-400/30 px-3 py-1.5 rounded-full inline-block">EXCELLENCE & INNOVATION</span>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+                Competitive Advantages To The Largest Companies!
+              </h2>
+            </div>
+            <p className="text-slate-300 text-base md:text-lg leading-relaxed font-medium">
               At SwiftLink Logistics, our mission is simple yet profound: to provide unparalleled shipping and logistics services that exceed our customers’ expectations at every turn. Through a relentless pursuit of excellence, innovation, and customer satisfaction, we aim to empower businesses of all sizes to thrive in today’s dynamic marketplace.
             </p>
-            <div className="pt-2">
-              <Link href="/usage" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-7 py-3.5 rounded-xl shadow-xl transition-all">
-                Discover More <ArrowRight size={14} />
-              </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
+                  <Globe size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-lg">Global Reach</h4>
+                  <p className="text-slate-400 text-sm mt-1">Expanding your business across borders seamlessly.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center shrink-0">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-lg">Maximum Security</h4>
+                  <p className="text-slate-400 text-sm mt-1">Full protection and insurance for your cargo.</p>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="lg:col-span-6"
-          >
-            <div className="relative h-[340px] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl bg-slate-800">
+          <motion.div {...staggerRevealProps(0.3)}>
+            <div className="relative h-[450px] rounded-[2rem] overflow-hidden border border-slate-700 shadow-2xl group">
               <img
                 src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200"
                 alt="SwiftLink Logistics Excellence"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 7. EXPERIENCE THE BENEFITS OF SMOOTH MOVING */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      {/* 8. SPECIALIZED SECTORS SHOWCASE */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-blue-600">SMOOTH MOVING BENEFITS</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-              Experience the benefits of smooth moving
-            </h2>
-            <p className="text-slate-500 text-base leading-relaxed">
-              Experience smooth logistics with us. Enjoy streamlined operations, cost savings, and efficiency. Discover how our solutions ensure reliable and hassle-free transportation for your goods.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-7 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:border-blue-200 transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                <Users size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Customer Satisfaction Tools</h3>
-              <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Enhance customer experience with our advanced tools, ensuring satisfaction at every touchpoint of the logistics process.
-              </p>
-            </div>
-
-            <div className="p-7 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:border-blue-200 transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                <BarChart3 size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Freight Payment Options</h3>
-              <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Choose from a range of flexible payment options tailored to your needs, simplifying the financial aspect of your logistics transactions.
-              </p>
-            </div>
-
-            <div className="p-7 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:border-blue-200 transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                <ShieldCheck size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Management & Reporting</h3>
-              <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Streamline operations with comprehensive management and reporting tools, providing insights to optimize efficiency and decision-making.
-              </p>
-            </div>
-
-            <div className="p-7 rounded-3xl bg-slate-50 border border-slate-100 space-y-4 hover:border-blue-200 transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                <Award size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900">Compliance Solutions</h3>
-              <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Stay compliant with industry regulations and standards using our tailored solutions, minimizing risk and ensuring smooth operations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. SPECIALIZED SECTORS SHOWCASE (Automotive, Technology, Healthcare, Renewable Energy, Industrial, Retail/Fashion) */}
-      <section className="py-20 bg-slate-100/70 border-t border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+          <motion.div {...revealProps} className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <span className="text-xs font-black uppercase tracking-widest text-blue-600">SPECIALIZED INDUSTRIES</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
               Tailored Logistics for Key Sectors
             </h2>
-            <p className="text-slate-600 text-base">Providing domain-specific supply chain solutions across critical global industries.</p>
-          </div>
+            <p className="text-slate-500 text-base">Providing domain-specific supply chain solutions across critical global industries.</p>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -477,19 +476,16 @@ export default function Home() {
             ].map((sector, i) => (
               <motion.div
                 key={sector.title}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: i * 0.05 }}
-                className="bg-white p-7 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all group"
+                {...staggerRevealProps(i * 0.1)}
+                className="bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
               >
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                  <sector.icon size={22} />
+                <div className="w-14 h-14 rounded-2xl bg-white text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm mb-5">
+                  <sector.icon size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{sector.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed font-medium">{sector.desc}</p>
-                <Link href={sector.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
-                  Read More <ArrowRight size={14} />
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2">{sector.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed font-medium mb-4">{sector.desc}</p>
+                <Link href={sector.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs uppercase tracking-wider group-hover:gap-3 transition-all">
+                  Get Quote <ArrowRight size={14} />
                 </Link>
               </motion.div>
             ))}
@@ -497,92 +493,167 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. LOGISTICS THAT IS CONNECTING YOU TO ENDLESS POSSIBILITIES (1:1 Section Parity) */}
-      <section className="py-20 bg-blue-600 text-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 text-center space-y-6 relative z-10">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight">
-            Logistics that is connecting you to endless possibilities
-          </h2>
-          <p className="text-blue-100 text-base max-w-3xl mx-auto leading-relaxed">
-            Embark on a journey of endless possibilities with our comprehensive logistics solutions. From seamless supply chain management to efficient transportation services, we connect you to new opportunities and growth. Learn how our innovative approach and global network enable businesses to expand horizons, unlock potential, and achieve success in today’s dynamic marketplace.
-          </p>
-          <div className="pt-2">
-            <Link
-              href="/usage"
-              className="bg-white text-blue-600 font-black text-xs md:text-sm px-8 py-4 rounded-xl shadow-lg hover:bg-slate-100 transition-all cursor-pointer inline-flex items-center gap-2"
-            >
-              Discover More <ArrowRight size={14} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 10. LEARN HOW WE HELP OUR CUSTOMERS ACHIEVE THEIR GOALS (1:1 Section Parity) */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      {/* 9. [NEW] LATEST NEWS & INSIGHTS (PORTFOLIO/BLOG) */}
+      <section className="py-24 bg-slate-100/50 border-t border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-blue-600">CUSTOMER SUCCESS STORIES</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-              Learn how we help our customers achieve their goals
-            </h2>
-            <p className="text-slate-500 text-base leading-relaxed">
-              Discover the transformative impact of our tailored solutions in helping customers reach their goals. From optimizing supply chains to delivering exceptional service, we empower businesses to thrive in their industries.
-            </p>
-          </div>
+          <motion.div {...revealProps} className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div className="space-y-4 max-w-2xl">
+              <span className="text-xs font-black uppercase tracking-widest text-blue-600">NEWS & INSIGHTS</span>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                Latest from SwiftLink
+              </h2>
+            </div>
+            <Link href="/about" className="inline-flex items-center gap-2 text-slate-900 bg-white border border-slate-200 hover:border-blue-600 hover:text-blue-600 font-extrabold text-sm px-6 py-3.5 rounded-xl shadow-sm transition-all shrink-0">
+              View All Articles <ArrowRight size={16} />
+            </Link>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                quote: "SwiftLink transformed our cross-border supply chain. Their real-time satellite tracking and customs brokerage eliminated our port clearance delays.",
-                name: "Marcus Vance",
-                role: "Global Supply VP, Apex Logistics"
+              { 
+                date: "Aug 24, 2026", 
+                title: "State of Global Supply Chains: Navigating 2026 Challenges", 
+                category: "Industry Insights",
+                img: "https://images.unsplash.com/photo-1494412685616-a5d310f28bf4?q=80&w=800"
               },
-              {
-                quote: "Their air freight express guarantees 24-hour turnaround for our urgent electronics cargo. The live map interface gives our clients total peace of mind.",
-                name: "Sarah Jenkins",
-                role: "Operations Director, TechExpress"
+              { 
+                date: "Aug 18, 2026", 
+                title: "How Satellite GPS is Revolutionizing Parcel Tracking", 
+                category: "Technology",
+                img: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?q=80&w=800"
               },
-              {
-                quote: "Contract warehousing and fulfillment with SwiftLink reduced our storage overhead by 30% while improving last-mile delivery times.",
-                name: "David Chen",
-                role: "Logistics Manager, Oceanica Freight"
+              { 
+                date: "Aug 10, 2026", 
+                title: "Sustainable Shipping: Reducing Carbon Footprints in Freight", 
+                category: "Sustainability",
+                img: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?q=80&w=800"
               }
-            ].map((test, i) => (
-              <div
-                key={i}
-                className="bg-slate-50 p-7 rounded-3xl border border-slate-100 space-y-5 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between"
+            ].map((article, i) => (
+              <motion.div 
+                key={i} 
+                {...staggerRevealProps(i * 0.15)}
+                className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-slate-100 group"
               >
-                <div className="space-y-4">
-                  <Quote size={28} className="text-blue-600" />
-                  <p className="text-slate-700 text-xs sm:text-sm font-medium leading-relaxed">
-                    "{test.quote}"
-                  </p>
-                </div>
-                <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                  <div>
-                    <p className="font-extrabold text-slate-900 text-sm">{test.name}</p>
-                    <p className="text-xs font-semibold text-slate-400">{test.role}</p>
+                <div className="relative h-56 overflow-hidden">
+                  <img src={article.img} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 shadow-sm">
+                    {article.category}
                   </div>
-                  <Link href="/about" className="text-xs font-extrabold text-blue-600 hover:underline">
-                    Read More
+                </div>
+                <div className="p-8 space-y-4">
+                  <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold">
+                    <Calendar size={14} /> {article.date}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug">
+                    {article.title}
+                  </h3>
+                  <Link href="/about" className="inline-flex items-center gap-1 text-slate-500 font-bold text-sm hover:text-blue-600 transition-colors pt-2">
+                    Read Article <ArrowUpRight size={16} />
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 11. FREQUENTLY ASKED QUESTIONS SECTION */}
-      <section className="py-20 bg-slate-50 border-t border-slate-200/80">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12 space-y-3">
-            <span className="text-xs font-black uppercase tracking-widest text-blue-600">FREQUENTLY ASKED QUESTIONS</span>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Our FAQs</h2>
-            <p className="text-slate-500 text-base">Find answers to common questions about SwiftLink Logistics tracking & consignment services.</p>
-          </div>
+      {/* 10. [NEW] INFINITE MARQUEE PARTNER LOGOS */}
+      <section className="py-16 bg-white overflow-hidden border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 mb-8 text-center">
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">TRUSTED BY GLOBAL PARTNERS & CARRIERS</span>
+        </div>
+        <div className="relative flex overflow-x-hidden w-full">
+          <motion.div
+            className="flex whitespace-nowrap gap-16 md:gap-32 items-center px-16"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+          >
+            {/* Array of Partner text/logos repeated for infinite scroll effect */}
+            {[...Array(2)].map((_, arrayIndex) => (
+              <div key={arrayIndex} className="flex gap-16 md:gap-32 items-center">
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">FEDEX</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">DHL EXPRESS</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">MAERSK</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">USPS LOGISTICS</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">UPS GLOBAL</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-300 tracking-tighter uppercase">AMAZON FREIGHT</span>
+              </div>
+            ))}
+          </motion.div>
+          {/* Gradient Masks for smooth fade on edges */}
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent" />
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent" />
+        </div>
+      </section>
 
-          <div className="bg-white p-7 md:p-10 rounded-3xl border border-slate-100 shadow-xl">
+      {/* 11. TESTIMONIALS */}
+      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+           <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] bg-blue-500 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <motion.div {...revealProps} className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-400">CUSTOMER SUCCESS STORIES</span>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">
+              Hear from our global clients
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                quote: "SwiftLink transformed our cross-border supply chain. Their real-time satellite tracking eliminated our port clearance delays.",
+                name: "Marcus Vance",
+                role: "Global Supply VP",
+                company: "Apex Logistics"
+              },
+              {
+                quote: "Their air freight express guarantees 24-hour turnaround for our urgent electronics cargo. Total peace of mind.",
+                name: "Sarah Jenkins",
+                role: "Operations Director",
+                company: "TechExpress"
+              },
+              {
+                quote: "Contract warehousing and fulfillment with SwiftLink reduced our storage overhead by 30% while improving last-mile delivery times.",
+                name: "David Chen",
+                role: "Logistics Manager",
+                company: "Oceanica Freight"
+              }
+            ].map((test, i) => (
+              <motion.div
+                key={i}
+                {...staggerRevealProps(i * 0.15)}
+                className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/10 space-y-6 shadow-xl flex flex-col justify-between"
+              >
+                <div className="space-y-6">
+                  <div className="flex gap-1 text-blue-400">
+                     {[...Array(5)].map((_, i) => <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>)}
+                  </div>
+                  <p className="text-slate-300 text-sm md:text-base font-medium leading-relaxed italic">
+                    "{test.quote}"
+                  </p>
+                </div>
+                <div className="pt-6 border-t border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-white text-base">{test.name}</p>
+                    <p className="text-xs font-semibold text-blue-400 mt-0.5">{test.role}, {test.company}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 12. FAQ */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <motion.div {...revealProps} className="text-center mb-16 space-y-4">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600">FREQUENTLY ASKED QUESTIONS</span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Our FAQs</h2>
+          </motion.div>
+
+          <motion.div {...revealProps} className="bg-white p-8 md:p-12 rounded-[2rem] border border-slate-100 shadow-xl">
             <FAQItem
               question="How do I track my shipment with SwiftLink Logistics?"
               answer="Simply enter your Consignment No. (e.g. 12345 or VTX948210394) into the search box at the top of this page and click 'Track Now' to see live status updates and satellite coordinates."
@@ -599,9 +670,9 @@ export default function Home() {
               question="How do I get a custom shipping quote?"
               answer="Click the 'Get a Quote' button in the navigation bar to submit your cargo weight, origin, and destination details for instant pricing."
             />
-          </div>
+          </motion.div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
