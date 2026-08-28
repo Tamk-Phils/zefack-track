@@ -1,88 +1,184 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Headset, Loader2, Bot, Sparkles, PhoneCall, Search, ArrowRight } from "lucide-react";
+import { MessageCircle, X, Send, Headset, Loader2, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-interface LocalMessage {
+interface ChatMessage {
     id: string;
-    sender: "bot" | "user" | "agent";
-    text: string;
-    time: string;
-    actionLink?: { label: string; url: string };
+    room_id: string;
+    sender_name: string;
+    content: string;
+    sender_role: "user" | "admin" | "system";
+    created_at: string;
 }
 
 export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<LocalMessage[]>([
-        {
-            id: "1",
-            sender: "bot",
-            text: "Hello! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?",
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
-    ]);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(1);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [roomId, setRoomId] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Initialize session and load messages
+    useEffect(() => {
+        let storedRoomId = localStorage.getItem('swiftlink_chat_room_id');
+        
+        const initChat = async () => {
+            if (!storedRoomId) return; // Wait for user to send first message
+            
+            setRoomId(storedRoomId);
+            
+            // Load existing messages
+            const { data } = await supabase
+                .from('chat_messages')
+                .select('*')
+                .eq('room_id', storedRoomId)
+                .order('created_at', { ascending: true });
+                
+            if (data && data.length > 0) {
+                setMessages(data);
+            } else {
+                // If room exists but no messages loaded yet, add welcome message
+                setMessages([{
+                    id: 'welcome',
+                    room_id: storedRoomId,
+                    sender_name: 'System',
+                    content: 'Hello! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?',
+                    sender_role: 'system',
+                    created_at: new Date().toISOString()
+                }]);
+            }
+        };
+
+        initChat();
+    }, []);
+
+    // Subscribe to real-time messages
+    useEffect(() => {
+        if (!roomId) return;
+
+        const channel = supabase
+            .channel(`chat-room-${roomId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `room_id=eq.${roomId}`
+                },
+                (payload) => {
+                    const newMsg = payload.new as ChatMessage;
+                    setMessages(prev => {
+                        // Prevent duplicates
+                        if (prev.find(m => m.id === newMsg.id)) return prev;
+                        return [...prev, newMsg];
+                    });
+                    
+                    if (!isOpen && newMsg.sender_role === 'admin') {
+                        setUnreadCount(prev => prev + 1);
+                    }
+                    setIsTyping(false);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [roomId, isOpen]);
 
     // Auto-scroll to latest message
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages, isTyping]);
+    }, [messages, isTyping, isOpen]);
 
     const handleOpen = () => {
         setIsOpen(true);
         setUnreadCount(0);
+        
+        // If no room exists, initialize welcome message locally
+        if (!roomId && messages.length === 0) {
+            setMessages([{
+                id: 'welcome',
+                room_id: 'temp',
+                sender_name: 'System',
+                content: 'Hello! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?',
+                sender_role: 'system',
+                created_at: new Date().toISOString()
+            }]);
+        }
     };
 
     const handleQuickAction = (promptText: string) => {
         submitUserMessage(promptText);
     };
 
-    const submitUserMessage = (text: string) => {
+    const submitUserMessage = async (text: string) => {
         if (!text.trim()) return;
 
-        const userMsg: LocalMessage = {
-            id: Date.now().toString(),
-            sender: "user",
-            text: text,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        let activeRoomId = roomId;
+
+        // Create room if it doesn't exist
+        if (!activeRoomId) {
+            const newRoomId = crypto.randomUUID();
+            activeRoomId = newRoomId;
+            setRoomId(newRoomId);
+            localStorage.setItem('swiftlink_chat_room_id', newRoomId);
+
+            // Insert new room
+            await supabase.from('chat_rooms').insert([{
+                id: newRoomId,
+                customer_name: `Visitor-${newRoomId.substring(0, 5)}`,
+                last_message: text
+            }]);
+        } else {
+            // Update last message in room
+            await supabase.from('chat_rooms').update({
+                last_message: text,
+                updated_at: new Date().toISOString()
+            }).eq('id', activeRoomId);
+        }
+
+        const userMsg: ChatMessage = {
+            id: crypto.randomUUID(),
+            room_id: activeRoomId,
+            sender_name: "Visitor",
+            content: text,
+            sender_role: "user",
+            created_at: new Date().toISOString()
         };
 
+        // Optimistically add message
         setMessages((prev) => [...prev, userMsg]);
         setInputValue("");
         setIsTyping(true);
 
-        // Simulated AI / Agent Bot Response
-        setTimeout(() => {
-            setIsTyping(false);
-            let botReply: LocalMessage = {
-                id: (Date.now() + 1).toString(),
-                sender: "agent",
-                text: "Thank you for reaching out! A SwiftLink dispatch agent has received your request.",
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-
-            const lower = text.toLowerCase();
-            if (lower.includes("track") || lower.includes("parcel") || lower.includes("vtx")) {
-                botReply.text = "You can track any consignment instantly using your tracking number (e.g., VTX948210394) on our tracking radar.";
-                botReply.actionLink = { label: "Go to Real Time Tracking", url: "/tracking" };
-            } else if (lower.includes("quote") || lower.includes("price") || lower.includes("cost") || lower.includes("rate")) {
-                botReply.text = "We offer instant customized quotes for Air, Ocean, Road, and Rail freight!";
-                botReply.actionLink = { label: "Request a Freight Quote", url: "/quote" };
-            } else if (lower.includes("contact") || lower.includes("phone") || lower.includes("agent") || lower.includes("help")) {
-                botReply.text = "Our 24/7 hotline is +1 (800) 555-SWIFT or you can email support@swiftlinkshipping.com.";
-                botReply.actionLink = { label: "View Support Options", url: "/contact" };
-            }
-
-            setMessages((prev) => [...prev, botReply]);
-        }, 1200);
+        // Send to Supabase
+        await supabase.from('chat_messages').insert([userMsg]);
+        
+        // If it's the very first message, simulate an automated acknowledgment while waiting for admin
+        if (messages.length <= 1) {
+            setTimeout(async () => {
+                const autoReply: ChatMessage = {
+                    id: crypto.randomUUID(),
+                    room_id: activeRoomId!,
+                    sender_name: "System",
+                    content: "Thank you for reaching out! A SwiftLink dispatch agent has been notified and will join the chat momentarily.",
+                    sender_role: "system",
+                    created_at: new Date().toISOString()
+                };
+                await supabase.from('chat_messages').insert([autoReply]);
+                setIsTyping(false);
+            }, 1500);
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -127,19 +223,19 @@ export default function ChatWidget() {
                             <span className="text-slate-400 shrink-0 font-extrabold uppercase tracking-wider text-[9px]">Quick:</span>
                             <button
                                 onClick={() => handleQuickAction("Track my consignment")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-2xs"
+                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
                             >
                                 📦 Track Consignment
                             </button>
                             <button
                                 onClick={() => handleQuickAction("Get a freight quote")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-2xs"
+                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
                             >
                                 💰 Request Quote
                             </button>
                             <button
                                 onClick={() => handleQuickAction("Speak to support agent")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-2xs"
+                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
                             >
                                 🎧 Live Support
                             </button>
@@ -153,37 +249,33 @@ export default function ChatWidget() {
                             {messages.map((msg) => (
                                 <div
                                     key={msg.id}
-                                    className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+                                    className={`flex flex-col ${msg.sender_role === 'user' ? 'items-end' : 'items-start'}`}
                                 >
                                     <div
-                                        className={`max-w-[85%] p-3.5 rounded-2xl text-xs font-semibold leading-relaxed shadow-sm ${msg.sender === 'user'
+                                        className={`max-w-[85%] p-3.5 rounded-2xl text-xs font-semibold leading-relaxed shadow-sm ${msg.sender_role === 'user'
                                             ? 'bg-blue-600 text-white rounded-br-none'
-                                            : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-none'
+                                            : msg.sender_role === 'admin'
+                                                ? 'bg-slate-900 text-white rounded-bl-none' 
+                                                : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-none'
                                             }`}
                                     >
-                                        <p>{msg.text}</p>
-
-                                        {msg.actionLink && (
-                                            <div className="mt-2.5 pt-2 border-t border-slate-100">
-                                                <Link
-                                                    href={msg.actionLink.url}
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-[11px] font-extrabold transition-colors"
-                                                >
-                                                    <span>{msg.actionLink.label}</span>
-                                                    <ArrowRight size={12} />
-                                                </Link>
-                                            </div>
-                                        )}
+                                        <p>{msg.content}</p>
                                     </div>
-                                    <span className="text-[10px] text-slate-400 mt-1 px-1 font-medium">{msg.time}</span>
+                                    <div className="flex items-center gap-1 mt-1 px-1">
+                                        <span className="text-[9px] font-bold text-slate-400">
+                                            {msg.sender_role === 'admin' ? 'Agent' : msg.sender_name}
+                                        </span>
+                                        <span className="text-[9px] text-slate-400 font-medium">
+                                            • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
                                 </div>
                             ))}
 
                             {isTyping && (
                                 <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold p-2 bg-white rounded-2xl border border-slate-200/60 w-fit">
                                     <Loader2 className="animate-spin text-blue-600" size={14} />
-                                    <span>SwiftLink agent is typing...</span>
+                                    <span>Waiting for response...</span>
                                 </div>
                             )}
                         </div>

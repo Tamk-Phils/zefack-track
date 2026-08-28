@@ -262,7 +262,7 @@ export default function Header() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[90] lg:hidden"
+                            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[-1] lg:hidden mt-[80px]"
                         />
 
                         {/* Slide Down Mobile Navigation Panel */}

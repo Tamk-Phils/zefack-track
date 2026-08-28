@@ -87,13 +87,23 @@ CREATE TABLE IF NOT EXISTS admin_users (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 4b. CREATE TABLE: chat_rooms
+CREATE TABLE IF NOT EXISTS chat_rooms (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_name VARCHAR(255) NOT NULL,
+    customer_email VARCHAR(255),
+    last_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 5. CREATE TABLE: chat_messages (Live Customer & Admin Chat)
 CREATE TABLE IF NOT EXISTS chat_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    room_id VARCHAR(255) DEFAULT 'general',
+    room_id UUID REFERENCES chat_rooms(id) ON DELETE CASCADE,
     sender_name VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    is_admin BOOLEAN DEFAULT FALSE,
+    content TEXT NOT NULL,
+    sender_role VARCHAR(50) DEFAULT 'user',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -127,6 +137,7 @@ DROP POLICY IF EXISTS "Public Update Shipments" ON shipments;
 DROP POLICY IF EXISTS "Public Read Updates" ON shipment_updates;
 DROP POLICY IF EXISTS "Public Insert Updates" ON shipment_updates;
 DROP POLICY IF EXISTS "Public Chat Messages" ON chat_messages;
+DROP POLICY IF EXISTS "Public Chat Rooms" ON chat_rooms;
 DROP POLICY IF EXISTS "Public Admin Users" ON admin_users;
 DROP POLICY IF EXISTS "Public System Alerts" ON system_alerts;
 
@@ -139,6 +150,7 @@ CREATE POLICY "Public Read Updates" ON shipment_updates FOR SELECT USING (true);
 CREATE POLICY "Public Insert Updates" ON shipment_updates FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Public Chat Messages" ON chat_messages FOR ALL USING (true);
+CREATE POLICY "Public Chat Rooms" ON chat_rooms FOR ALL USING (true);
 CREATE POLICY "Public Admin Users" ON admin_users FOR ALL USING (true);
 CREATE POLICY "Public System Alerts" ON system_alerts FOR ALL USING (true);
 
