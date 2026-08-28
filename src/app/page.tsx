@@ -84,6 +84,11 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 
 export default function Home() {
   const [activeSectorTab, setActiveSectorTab] = useState("all");
+  const quickFeaturesRef = useRef<HTMLDivElement>(null);
+
+  const scrollToQuickFeatures = () => {
+    quickFeaturesRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const marqueeItems = [
     "AIR FREIGHT EXPRESS",
@@ -111,22 +116,23 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28 overflow-x-hidden">
-      {/* 1. HERO SECTION - Animated Ken Burns Zoom + Pulsing Radar */}
-      <section className="relative min-h-[88vh] flex items-center py-20 overflow-hidden bg-slate-900 text-white">
-        {/* Background Image with Ken Burns Parallax Animation */}
+      {/* 1. HERO SECTION - Ultra Light Overlay + Bright Clear Cargo Image + Bouncing Scroll Down */}
+      <section className="relative min-h-[90vh] flex flex-col justify-center py-20 overflow-hidden bg-slate-950 text-white">
+        {/* Bright Background Cargo Image with Minimal Light Overlay */}
         <div className="absolute inset-0 z-0">
           <motion.img
             src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
-            alt="SwiftLink Global Cargo Logistics"
+            alt="SwiftLink Global Cargo Shipping"
             initial={{ scale: 1 }}
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            className="w-full h-full object-cover opacity-35"
+            animate={{ scale: [1, 1.06, 1] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+            className="w-full h-full object-cover opacity-85"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-blue-950/80" />
+          {/* Ultra light subtle vignette overlay for crisp readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-slate-900/35 to-blue-950/40 backdrop-brightness-[0.95]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
+        <div className="max-w-7xl mx-auto px-6 relative z-20 w-full pt-6 pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Hero Copy */}
             <motion.div
@@ -140,7 +146,7 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/90 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg backdrop-blur-md"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white font-extrabold text-xs uppercase tracking-wider shadow-xl border border-blue-400/30"
                 >
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
@@ -153,10 +159,10 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.7 }}
-                  className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white"
+                  className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
                 >
                   Welcome to Your Comprehensive <br />
-                  <span className="text-blue-400 bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
+                  <span className="text-blue-400 bg-gradient-to-r from-blue-300 via-blue-400 to-sky-300 bg-clip-text text-transparent drop-shadow-md">
                     Shipping & Logistics
                   </span> Solution!
                 </motion.h1>
@@ -165,7 +171,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.7 }}
-                  className="text-slate-200 text-base md:text-xl font-medium max-w-2xl leading-relaxed"
+                  className="text-white text-base md:text-xl font-bold max-w-2xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
                 >
                   We offer a range of services including land, sea, and air freight, along with warehousing solutions. Let us simplify your logistics needs.
                 </motion.p>
@@ -177,19 +183,19 @@ export default function Home() {
                 transition={{ delay: 0.5 }}
                 className="flex flex-wrap gap-4 pt-2"
               >
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="/usage"
-                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-sm px-8 py-4 rounded-xl shadow-xl hover:shadow-blue-600/50 transition-all flex items-center gap-3 group cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-black text-sm px-8 py-4 rounded-xl shadow-2xl hover:shadow-blue-600/60 transition-all flex items-center gap-3 group cursor-pointer border border-blue-400/30"
                   >
                     <span>View Services</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform" />
                   </Link>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="/quote"
-                    className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-sm px-8 py-4 rounded-xl border border-white/20 backdrop-blur-md transition-all cursor-pointer block"
+                    className="bg-slate-900/80 hover:bg-slate-900 text-white font-black text-sm px-8 py-4 rounded-xl border border-white/40 backdrop-blur-md transition-all cursor-pointer block shadow-xl"
                   >
                     Get a Free Quote
                   </Link>
@@ -204,10 +210,7 @@ export default function Home() {
               transition={{ duration: 0.7, delay: 0.3 }}
               className="lg:col-span-5"
             >
-              <div className="bg-white/95 backdrop-blur-md p-8 rounded-3xl border border-white/80 shadow-2xl text-slate-900 space-y-4 relative overflow-hidden">
-                {/* Radar Ring Visual Accent */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-
+              <div className="bg-white/95 backdrop-blur-md p-8 rounded-3xl border border-white/90 shadow-2xl text-slate-900 space-y-4 relative overflow-hidden">
                 <div className="space-y-1 border-b border-slate-100 pb-3">
                   <span className="text-xs font-black uppercase tracking-wider text-blue-600 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
@@ -222,6 +225,27 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
+
+        {/* Animated Bouncing "Scroll Down" Indicator at Hero Bottom */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="relative z-20 flex flex-col items-center justify-center pt-4 cursor-pointer"
+          onClick={scrollToQuickFeatures}
+        >
+          <span className="text-[10px] font-black tracking-widest text-white uppercase drop-shadow-md mb-2 flex items-center gap-1">
+            <span>Scroll Down</span>
+            <ChevronDown size={12} className="animate-bounce text-blue-400" />
+          </span>
+          <div className="w-6 h-10 rounded-full border-2 border-white/80 flex justify-center p-1 backdrop-blur-sm bg-slate-900/30 shadow-lg">
+            <motion.div
+              animate={{ y: [0, 14, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1.5 h-2.5 rounded-full bg-blue-400"
+            />
+          </div>
+        </motion.div>
       </section>
 
       {/* 2. INFINITE SCROLLING MARQUEE TICKER BAR */}
@@ -242,8 +266,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. THREE QUICK FEATURE CARDS - Overlapping Below Hero */}
-      <section className="relative z-30 max-w-7xl mx-auto px-6 -mt-10 mb-20">
+      {/* 3. THREE QUICK FEATURE CARDS - Target of Scroll Down */}
+      <section ref={quickFeaturesRef} className="relative z-30 max-w-7xl mx-auto px-6 pt-12 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
@@ -539,7 +563,7 @@ export default function Home() {
           {/* Filtered Grid with Layout Animations */}
           <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <AnimatePresence>
-              {filteredSectors.map((sector, i) => (
+              {filteredSectors.map((sector) => (
                 <motion.div
                   key={sector.title}
                   layout
