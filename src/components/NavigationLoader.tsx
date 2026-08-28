@@ -31,7 +31,7 @@ function LoaderContent() {
       }
     };
 
-    const handleFormSubmit = (e: SubmitEvent) => {
+    const handleFormSubmit = () => {
       setIsLoading(true);
     };
 
@@ -47,22 +47,22 @@ function LoaderContent() {
   if (!isLoading) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] pointer-events-none flex flex-col justify-between">
+    <div className="fixed top-0 left-0 right-0 z-[99999] pointer-events-none">
       {/* Top Loading Progress Line */}
-      <div className="w-full h-1 bg-blue-100 overflow-hidden relative shadow-sm">
+      <div className="w-full h-1.5 bg-blue-100 overflow-hidden relative shadow-sm">
         <div className="h-full bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-600 animate-pulse w-full" />
       </div>
 
-      {/* Floating Center Loading Spinner Card */}
-      <div className="fixed inset-0 bg-slate-900/15 backdrop-blur-[2px] flex items-center justify-center pointer-events-auto animate-in fade-in duration-150">
-        <div className="bg-white/95 backdrop-blur-md px-6 py-5 rounded-2xl shadow-2xl border border-slate-100 flex items-center gap-4 text-slate-800 animate-in zoom-in-95 duration-150">
+      {/* Non-intrusive Top-Right Floating Loading Spinner Toast (NO SCREEN OVERLAY) */}
+      <div className="fixed top-24 right-6 z-[99999] pointer-events-none animate-in slide-in-from-top-2 fade-in duration-200">
+        <div className="bg-white/95 px-5 py-3.5 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-3.5 text-slate-800">
           <div className="relative flex items-center justify-center">
-            <div className="w-10 h-10 rounded-full border-3 border-blue-100 border-t-blue-600 animate-spin" />
-            <Navigation size={16} className="text-blue-600 absolute transform rotate-45" />
+            <div className="w-7 h-7 rounded-full border-2 border-blue-100 border-t-blue-600 animate-spin" />
+            <Navigation size={12} className="text-blue-600 absolute transform rotate-45" />
           </div>
           <div>
-            <p className="font-extrabold text-sm text-slate-900 tracking-tight">SwiftLink Logistics</p>
-            <p className="text-[11px] text-blue-600 font-bold uppercase tracking-wider animate-pulse">Loading Page Data...</p>
+            <p className="font-extrabold text-xs text-slate-900 tracking-tight">SwiftLink Logistics</p>
+            <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider animate-pulse">Loading...</p>
           </div>
         </div>
       </div>

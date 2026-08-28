@@ -101,9 +101,6 @@ export default function RootLayout({
       </head>
       <body className="font-sans bg-background text-foreground shrink-0">
         <div className="min-h-screen flex flex-col relative overflow-x-hidden">
-          {/* Subtle Light Glow Effect */}
-          <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,112,243,0.02)_0%,transparent_50%)] pointer-events-none z-0" />
-          
           <NavigationLoader />
           <Header />
           <main className="flex-1 relative z-10">

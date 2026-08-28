@@ -103,10 +103,6 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Hero Section - Completely Bright & Clean without Dark Layer */}
       <section className="relative min-h-[80vh] flex items-center pt-28 pb-24 overflow-hidden bg-gradient-to-b from-blue-50/60 via-white to-slate-50 border-b border-slate-100">
-        {/* Background Graphic Accents */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
-
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Content Column */}
