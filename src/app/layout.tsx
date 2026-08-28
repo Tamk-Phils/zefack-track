@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import BackToTop from "@/components/BackToTop";
+import NavigationLoader from "@/components/NavigationLoader";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -103,6 +104,7 @@ export default function RootLayout({
           {/* Subtle Light Glow Effect */}
           <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,112,243,0.02)_0%,transparent_50%)] pointer-events-none z-0" />
           
+          <NavigationLoader />
           <Header />
           <main className="flex-1 relative z-10">
             {children}
