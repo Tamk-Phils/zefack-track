@@ -116,20 +116,20 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-8 bg-white/95 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-slate-200/90 shadow-2xl">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 text-blue-700 font-bold text-xs uppercase tracking-wider">
-                  <Zap size={14} className="text-blue-600 fill-blue-600" />
+            {/* Left Content Column - Direct on Background Image without White Box */}
+            <div className="lg:col-span-7 space-y-8">
+              <div className="space-y-5">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg">
+                  <Zap size={14} className="text-white fill-white" />
                   SwiftLink Express Network
                 </div>
 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">
                   Track Your <br />
-                  <span className="text-blue-600">Packages in Real Time</span>
+                  <span className="text-blue-400">Packages in Real Time</span>
                 </h1>
 
-                <p className="text-slate-600 text-base md:text-lg font-medium max-w-xl leading-relaxed">
+                <p className="text-slate-100 text-base md:text-xl font-bold max-w-xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                   Get real-time updates on your shipments. <br className="hidden sm:inline" />
                   Fast, reliable and secure tracking for your peace of mind.
                 </p>
@@ -143,7 +143,7 @@ export default function Home() {
 
             {/* Right Package Image Showcase (Desktop Showcase) */}
             <div className="hidden lg:block lg:col-span-5">
-              <div className="relative h-[440px] rounded-3xl overflow-hidden border border-white/80 shadow-2xl group bg-white">
+              <div className="relative h-[440px] rounded-3xl overflow-hidden border border-white/60 shadow-2xl group">
                 <Image
                   src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1200"
                   alt="SwiftLink Express Parcel Package"
@@ -151,12 +151,12 @@ export default function Home() {
                   priority
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-xl space-y-1.5">
-                  <div className="flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-wider">
+                <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 shadow-xl space-y-1.5 text-white">
+                  <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
                     <Package size={16} /> SWIFTLINK PARCEL EXPRESS
                   </div>
-                  <p className="text-slate-900 font-extrabold text-base">Real-Time Package Surveillance</p>
-                  <p className="text-slate-500 text-xs font-medium">Direct GPS sync across air, sea, and ground transit hubs.</p>
+                  <p className="text-white font-extrabold text-base">Real-Time Package Surveillance</p>
+                  <p className="text-slate-300 text-xs font-medium">Direct GPS sync across air, sea, and ground transit hubs.</p>
                 </div>
               </div>
             </div>
