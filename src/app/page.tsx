@@ -20,12 +20,9 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
           <span className="w-2 h-2 rounded-full bg-blue-600" />
           {question}
         </span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          className="text-slate-400 group-hover:text-blue-600 transition-colors shrink-0 ml-4"
-        >
+        <div className={`text-slate-400 group-hover:text-blue-600 transition-transform duration-200 shrink-0 ml-4 ${isOpen ? 'rotate-180 text-blue-600' : ''}`}>
           <ChevronDown size={20} />
-        </motion.div>
+        </div>
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -45,64 +42,101 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
   );
 };
 
+// Feature Dropdown Component for Pillars
+const FeatureDropdownItem = ({
+  icon: Icon,
+  title,
+  shortDesc,
+  fullDesc,
+  defaultOpen = false
+}: {
+  icon: any;
+  title: string;
+  shortDesc: string;
+  fullDesc: string;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border border-slate-200/80 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-5 md:p-6 flex items-center justify-between text-left group hover:bg-slate-50/80 transition-colors"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+            <Icon size={22} />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-base md:text-lg group-hover:text-blue-600 transition-colors">{title}</h3>
+            <p className="text-slate-500 text-xs md:text-sm font-normal mt-0.5">{shortDesc}</p>
+          </div>
+        </div>
+        <div className={`p-2 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all shrink-0 ml-4 transform ${isOpen ? 'rotate-180 bg-blue-50 text-blue-600' : ''}`}>
+          <ChevronDown size={18} />
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 pt-2 text-slate-600 text-sm leading-relaxed border-t border-slate-100 bg-slate-50/50 flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+              <p className="font-medium text-slate-700">{fullDesc}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Hero Section - Matching Uploaded Reference Image with Package Display */}
-      <section className="relative min-h-[85vh] flex items-center pt-28 pb-24 overflow-hidden bg-slate-900">
-        {/* Express Package Background Image for Mobile/Smaller Screens - Clean overlay without blur */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
-            alt="SwiftLink Express Package Logistics"
-            fill
-            priority
-            className="object-cover object-center opacity-40 lg:opacity-25"
-          />
-          {/* Pure dark gradient overlay without any blur coating */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-[#0b192c]/80 z-10" />
-        </div>
+      {/* Hero Section - Completely Bright & Clean without Dark Layer */}
+      <section className="relative min-h-[80vh] flex items-center pt-28 pb-24 overflow-hidden bg-gradient-to-b from-blue-50/60 via-white to-slate-50 border-b border-slate-100">
+        {/* Background Graphic Accents */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-4"
-              >
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1]">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-700 font-bold text-xs uppercase tracking-wider">
+                  <Zap size={14} className="text-blue-600 fill-blue-600" />
+                  SwiftLink Express Network
+                </div>
+
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight leading-[1.1]">
                   Track Your <br />
-                  <span className="text-blue-500">Packages in Real Time</span>
+                  <span className="text-blue-600">Packages in Real Time</span>
                 </h1>
 
-                <p className="text-slate-300 text-base md:text-xl font-normal max-w-xl leading-relaxed">
+                <p className="text-slate-600 text-base md:text-xl font-medium max-w-xl leading-relaxed">
                   Get real-time updates on your shipments. <br className="hidden sm:inline" />
                   Fast, reliable and secure tracking for your peace of mind.
                 </p>
-              </motion.div>
+              </div>
 
               {/* Search Box Component */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="max-w-2xl"
-              >
+              <div className="max-w-2xl">
                 <TrackingSearch />
-              </motion.div>
+              </div>
             </div>
 
-            {/* Right Package Image Card (Desktop Showcase) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="hidden lg:block lg:col-span-5"
-            >
-              <div className="relative h-[440px] rounded-3xl overflow-hidden border border-slate-700/60 shadow-2xl group">
+            {/* Right Package Image Showcase - Crisp Clean Image without dark overlay */}
+            <div className="hidden lg:block lg:col-span-5">
+              <div className="relative h-[460px] rounded-3xl overflow-hidden border border-slate-200/80 shadow-2xl group bg-white">
                 <Image
                   src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1200"
                   alt="SwiftLink Express Parcel Package"
@@ -110,77 +144,63 @@ export default function Home() {
                   priority
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b192c] via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-slate-900/90 border border-slate-700/60 space-y-2">
-                  <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/80 shadow-xl space-y-1.5">
+                  <div className="flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-wider">
                     <Package size={16} /> SWIFTLINK PARCEL EXPRESS
                   </div>
-                  <p className="text-white font-extrabold text-base">Real-Time Package Surveillance</p>
-                  <p className="text-slate-400 text-xs">Direct GPS sync across air, sea, and ground transit hubs.</p>
+                  <p className="text-slate-900 font-extrabold text-base">Real-Time Package Surveillance</p>
+                  <p className="text-slate-500 text-xs font-medium">Direct GPS sync across air, sea, and ground transit hubs.</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Floating 4 Pillars Feature Card (Overlapping Hero) */}
-      <section className="relative z-30 max-w-7xl mx-auto px-6 -mt-16 mb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-10"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Pillar 1 */}
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <MapPin size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-base">Real-Time Tracking</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">Get live updates on your shipment status.</p>
-              </div>
+      {/* Feature Pillar Dropdown Section - Realtime Tracking, Secure & Reliable, Instant Notification */}
+      <section className="relative z-30 max-w-7xl mx-auto px-6 -mt-10 mb-20">
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 md:p-10 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Key Logistics Features</span>
+              <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mt-0.5">SwiftLink Service Capabilities</h2>
             </div>
-
-            {/* Pillar 2 */}
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <ShieldCheck size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-base">Secure & Reliable</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">Your data is safe with us. We value your privacy.</p>
-              </div>
-            </div>
-
-            {/* Pillar 3 */}
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <Bell size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-base">Instant Notifications</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">Receive instant alerts on every update.</p>
-              </div>
-            </div>
-
-            {/* Pillar 4 */}
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                <Headphones size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-slate-900 text-base">24/7 Support</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">Our support team is here to help you anytime.</p>
-              </div>
-            </div>
+            <span className="text-slate-400 text-xs font-semibold flex items-center gap-1">
+              <ChevronDown size={14} className="text-blue-600" /> Click any feature to toggle dropdown
+            </span>
           </div>
-        </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FeatureDropdownItem
+              icon={MapPin}
+              title="Real-Time Tracking"
+              shortDesc="Get live updates on your shipment status."
+              fullDesc="Continuous satellite GPS tracking provides real-time geographic location coordinates, speed telemetry, and precise estimated time of arrival updates for every parcel."
+              defaultOpen={true}
+            />
+            <FeatureDropdownItem
+              icon={ShieldCheck}
+              title="Secure & Reliable"
+              shortDesc="Your data is safe with us. We value your privacy."
+              fullDesc="End-to-end encrypted waybill verification ensures tamper-proof logistics records, protected by enterprise-grade security protocols across all international hubs."
+            />
+            <FeatureDropdownItem
+              icon={Bell}
+              title="Instant Notifications"
+              shortDesc="Receive instant alerts on every update."
+              fullDesc="Automated dispatch alerts notify senders and recipients immediately upon customs clearance, flight departures, transit check-ins, and final delivery scans."
+            />
+            <FeatureDropdownItem
+              icon={Headphones}
+              title="24/7 Support"
+              shortDesc="Our support team is here to help you anytime."
+              fullDesc="Dedicated logistics specialist support available around-the-clock to assist with route updates, address modifications, customs paperwork, and delivery inquiries."
+            />
+          </div>
+        </div>
       </section>
 
-      {/* How It Works Section - Matching Reference Image */}
+      {/* How It Works Section */}
       <section className="py-20 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
@@ -351,5 +371,3 @@ export default function Home() {
     </main>
   );
 }
-
-
