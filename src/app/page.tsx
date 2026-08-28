@@ -1,6 +1,6 @@
 "use client";
 
-import { MoveRight, ShieldCheck, Globe, Zap, ChevronDown, MapPin, Bell, Headphones, Search, FileText, Package, Truck, Ship, Plane, Clock, Phone, Mail, ArrowRight, Check, Train, Box, Shield, Award, Users, BarChart3, Layers, Compass } from "lucide-react";
+import { MoveRight, ShieldCheck, Globe, Zap, ChevronDown, MapPin, Bell, Headphones, Search, FileText, Package, Truck, Ship, Plane, Clock, Phone, Mail, ArrowRight, Check, Train, Box, Shield, Award, Users, BarChart3, Layers, Compass, Cpu, Stethoscope, Sun, Factory, ShoppingBag, Star, Quote } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,9 +45,8 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-20 md:pt-28">
-      {/* Hero Section - Matching theglobalcargo layout with Blue Theme & Background Image */}
+      {/* 1. HERO SECTION - Matching theglobalcargo */}
       <section className="relative min-h-[85vh] flex items-center py-20 overflow-hidden bg-slate-900 text-white">
-        {/* Background Package Image with Subtle Blue Tint */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
@@ -61,7 +60,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Content Column */}
+            {/* Left Hero Copy */}
             <div className="lg:col-span-7 space-y-8">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600/90 text-white font-bold text-xs uppercase tracking-wider shadow-lg">
@@ -75,7 +74,7 @@ export default function Home() {
                 </h1>
 
                 <p className="text-slate-200 text-base md:text-xl font-medium max-w-2xl leading-relaxed">
-                  We offer a complete range of global services including land, sea, and air freight, along with warehousing solutions. Let us simplify your logistics needs.
+                  We offer a range of services including land, sea, and air freight, along with warehousing solutions. Let us simplify your logistics needs.
                 </p>
               </div>
 
@@ -96,12 +95,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right Tracking Input Container - Embedded in Hero */}
+            {/* Right Hero Tracking Consignment Search */}
             <div className="lg:col-span-5">
               <div className="bg-white/95 backdrop-blur-md p-8 rounded-3xl border border-white/80 shadow-2xl text-slate-900 space-y-4">
                 <div className="space-y-1 border-b border-slate-100 pb-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-blue-600">INSTANT CONSIGNMENT SEARCH</span>
-                  <h3 className="text-2xl font-black tracking-tight">Enter Consignment No.</h3>
+                  <span className="text-xs font-black uppercase tracking-wider text-blue-600">ENTER CONSIGNMENT NO.</span>
+                  <h3 className="text-2xl font-black tracking-tight">Track Your Shipment</h3>
                   <p className="text-slate-500 text-xs font-medium">Ex: VTX948210394 or VTX104928172</p>
                 </div>
 
@@ -112,7 +111,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3 Quick Supply Chain Feature Cards - Overlapping Below Hero */}
+      {/* 2. THREE QUICK FEATURE CARDS - Overlapping Below Hero */}
       <section className="relative z-30 max-w-7xl mx-auto px-6 -mt-12 mb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl transition-all space-y-4 group">
@@ -121,9 +120,9 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Supply Chain Solutions</h3>
             <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Optimize your operations with our tailored supply chain solutions. From procurement to distribution, we streamline logistics.
+              Optimize your operations with our tailored supply chain solutions. From procurement to distribution, we streamline your logistics workflow.
             </p>
-            <Link href="/usage" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+            <Link href="/usage#logistics" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
               Learn More <ArrowRight size={14} />
             </Link>
           </div>
@@ -134,9 +133,9 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">End-to-End Transportation</h3>
             <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Experience seamless logistics from start to finish with our end-to-end transportation services across land, sea, and air.
+              Experience seamless logistics from start to finish with our end-to-end transportation services across land, sea, and air corridors.
             </p>
-            <Link href="/usage" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+            <Link href="/usage#road" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
               Learn More <ArrowRight size={14} />
             </Link>
           </div>
@@ -147,25 +146,41 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Contract Logistics</h3>
             <p className="text-slate-500 text-sm leading-relaxed font-normal">
-              Delegate your logistics operations to the experts. With our contract logistics services, we manage warehousing & fulfillment.
+              Delegate your logistics operations to the experts. With our contract logistics services, we manage your warehousing & fulfillment.
             </p>
-            <Link href="/usage" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+            <Link href="/usage#warehouse" className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
               Learn More <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* "Dive into Our Comprehensive Service Offerings" Section */}
-      <section className="py-20 bg-white border-t border-slate-100">
+      {/* 3. DEDICATED TRACK YOUR SHIPMENT SECTION */}
+      <section className="py-16 bg-blue-600 text-white">
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-4">
+          <span className="text-xs font-black uppercase tracking-widest text-blue-200">REAL TIME CONSIGNMENT MONITORING</span>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight">Track Your Shipment Easily</h2>
+          <p className="text-blue-100 text-base max-w-2xl mx-auto font-medium">
+            Enter your consignment tracking number to get real-time updates on your delivery status and satellite GPS coordinates.
+          </p>
+          <div className="pt-2">
+            <Link href="/tracking" className="inline-flex items-center gap-2 bg-white text-blue-600 font-extrabold text-xs px-8 py-3.5 rounded-xl shadow-lg hover:bg-slate-100 transition-all">
+              <Search size={16} /> Open Dedicated Radar Tracking <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. DIVE INTO OUR COMPREHENSIVE SERVICE OFFERINGS */}
+      <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <span className="text-xs font-black uppercase tracking-widest text-blue-600">WHO WE ARE</span>
             <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
               Dive into Our Comprehensive Service Offerings
             </h2>
-            <p className="text-slate-500 text-base leading-relaxed">
-              At SwiftLink Logistics, we are more than just a shipping company – we are your trusted partner in navigating the complexities of global trade and commerce.
+            <p className="text-slate-600 text-base leading-relaxed">
+              At SwiftLink Logistics, we are more than just a shipping and logistics company – we are your trusted partner in navigating the complexities of global trade and commerce. With a rich history and a forward-thinking approach, we strive to redefine industry standards.
             </p>
           </div>
 
@@ -183,7 +198,7 @@ export default function Home() {
               </div>
               <ul className="space-y-2.5 text-xs font-bold text-slate-700">
                 <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Multimodal International Transit Corridors</li>
-                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Real-time Satellite Waybill Surveillance</li>
+                <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Real-Time Satellite Waybill Surveillance</li>
                 <li className="flex items-center gap-2.5"><Check size={16} className="text-blue-600 shrink-0" /> Automated Export Customs Clearance</li>
               </ul>
               <div className="pt-2">
@@ -219,7 +234,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* "Empower Your Business with Better Logistics" — 8 Service Portfolio Cards */}
+      {/* 5. EMPOWER YOUR BUSINESS WITH BETTER LOGISTICS — 8 SERVICE PORTFOLIO CARDS */}
       <section className="py-24 bg-slate-100/70 border-t border-slate-200/60">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
@@ -237,7 +252,7 @@ export default function Home() {
               { title: "Ocean Freight", desc: "International maritime container shipping with customs clearance.", icon: Ship, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800", href: "/usage#ocean" },
               { title: "Rail Freight", desc: "Eco-friendly long-distance bulk rail transit solutions.", icon: Train, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?q=80&w=800", href: "/usage#rail" },
               { title: "Warehousing", desc: "Strategic climate-controlled storage & inventory fulfillment.", icon: Box, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800", href: "/usage#warehouse" },
-              { title: "Packaging", desc: "Industrial protective packaging & custom crating options.", icon: Package, iconColor: "text-blue-600", img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=800", href: "/usage#packaging" },
+              { title: "Packaging", desc: "Industrial protective packaging & custom crating options.", icon: Package, img: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=800", href: "/usage#packaging" },
               { title: "Logistics Solution", desc: "End-to-end supply chain integration & route optimization.", icon: Layers, img: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=800", href: "/usage#logistics" },
               { title: "Cargo Insurance", desc: "Full transit policy coverage protecting high-value shipments.", icon: ShieldCheck, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800", href: "/usage#insurance" },
             ].map((service, i) => (
@@ -273,7 +288,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* "Experience the Benefits of Smooth Moving" Section */}
+      {/* 6. COMPETITIVE ADVANTAGES TO THE LARGEST COMPANIES */}
+      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-6 space-y-6">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-400">EXCELLENCE & INNOVATION</span>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              Competitive Advantages To The Largest Companies!
+            </h2>
+            <p className="text-slate-300 text-base leading-relaxed font-medium">
+              At SwiftLink Logistics, our mission is simple yet profound: to provide unparalleled shipping and logistics services that exceed our customers’ expectations at every turn. Through a relentless pursuit of excellence, innovation, and customer satisfaction, we aim to empower businesses of all sizes to thrive in today’s dynamic marketplace.
+            </p>
+            <div className="pt-2">
+              <Link href="/about" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-8 py-4 rounded-xl shadow-xl transition-all">
+                Discover More <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6">
+            <div className="relative h-[380px] rounded-3xl overflow-hidden border border-slate-700 shadow-2xl">
+              <Image
+                src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1200"
+                alt="SwiftLink Logistics Excellence"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. EXPERIENCE THE BENEFITS OF SMOOTH MOVING */}
       <section className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
@@ -282,7 +329,7 @@ export default function Home() {
               Experience the Benefits of Smooth Moving
             </h2>
             <p className="text-slate-500 text-base leading-relaxed">
-              Experience smooth logistics with us. Enjoy streamlined operations, cost savings, and efficiency. Discover how our solutions ensure reliable transportation.
+              Experience smooth logistics with us. Enjoy streamlined operations, cost savings, and efficiency. Discover how our solutions ensure reliable and hassle-free transportation for your goods.
             </p>
           </div>
 
@@ -293,7 +340,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-bold text-slate-900">Customer Satisfaction Tools</h3>
               <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Enhance customer experience with our advanced tracking tools, ensuring satisfaction at every touchpoint of the process.
+                Enhance customer experience with our advanced tools, ensuring satisfaction at every touchpoint of the logistics process.
               </p>
             </div>
 
@@ -303,7 +350,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-bold text-slate-900">Freight Payment Options</h3>
               <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Choose from a range of flexible payment options tailored to your needs, simplifying financial logistics transactions.
+                Choose from a range of flexible payment options tailored to your needs, simplifying the financial aspect of your logistics transactions.
               </p>
             </div>
 
@@ -313,7 +360,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-bold text-slate-900">Management & Reporting</h3>
               <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Streamline operations with comprehensive reporting tools, providing insights to optimize efficiency and decision-making.
+                Streamline operations with comprehensive management and reporting tools, providing insights to optimize efficiency and decision-making.
               </p>
             </div>
 
@@ -323,14 +370,99 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-bold text-slate-900">Compliance Solutions</h3>
               <p className="text-slate-500 text-xs leading-relaxed font-medium">
-                Stay compliant with international trade regulations using our tailored solutions, minimizing risk and ensuring smooth delivery.
+                Stay compliant with industry regulations and standards using our tailored solutions, minimizing risk and ensuring smooth operations.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* 8. INDUSTRY SECTORS SHOWCASE (Automotive, Tech, Healthcare, Energy, Industrial, Retail) */}
+      <section className="py-24 bg-slate-100/70 border-t border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600">SPECIALIZED INDUSTRIES</span>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+              Tailored Logistics for Key Sectors
+            </h2>
+            <p className="text-slate-600 text-base">Providing domain-specific supply chain solutions across critical global industries.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { title: "Automotive Logistics", desc: "Just-in-time auto parts delivery, vehicle transport, and assembly line supply.", icon: Truck, href: "/quote" },
+              { title: "Technology & Electronics", desc: "High-security transit for microchips, server hardware, and consumer electronics.", icon: Cpu, href: "/quote" },
+              { title: "Healthcare & Pharma", desc: "Temperature-monitored cold-chain shipping for medical supplies and pharmaceuticals.", icon: Stethoscope, href: "/quote" },
+              { title: "Renewable Energy", desc: "Heavy transport for wind turbine blades, solar equipment, and power grids.", icon: Sun, href: "/quote" },
+              { title: "Industrial Manufacturing", desc: "Heavy machinery freight, raw material transport, and plant logistics.", icon: Factory, href: "/quote" },
+              { title: "Retail & Fashion", desc: "Rapid e-commerce fulfillment, store distribution, and seasonal inventory logistics.", icon: ShoppingBag, href: "/quote" },
+            ].map((sector, i) => (
+              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all group">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  <sector.icon size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{sector.title}</h3>
+                <p className="text-slate-500 text-xs leading-relaxed font-medium">{sector.desc}</p>
+                <Link href={sector.href} className="inline-flex items-center gap-2 text-blue-600 font-extrabold text-xs group-hover:gap-3 transition-all pt-2">
+                  Read More <ArrowRight size={14} />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 9. LEARN HOW WE HELP OUR CUSTOMERS ACHIEVE THEIR GOALS (TESTIMONIALS) */}
+      <section className="py-24 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600">CUSTOMER SUCCESS STORIES</span>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+              Learn How We Help Our Customers Achieve Their Goals
+            </h2>
+            <p className="text-slate-500 text-base leading-relaxed">
+              Discover the transformative impact of our tailored solutions in helping customers reach their goals. From optimizing supply chains to delivering exceptional service, we empower businesses to thrive.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+              <Quote size={32} className="text-blue-600" />
+              <p className="text-slate-700 text-sm font-medium leading-relaxed">
+                "SwiftLink transformed our cross-border supply chain. Their real-time satellite tracking and customs brokerage eliminated our port clearance delays."
+              </p>
+              <div>
+                <p className="font-extrabold text-slate-900 text-sm">Marcus Vance</p>
+                <p className="text-xs font-semibold text-slate-400">Global Supply VP, Apex Logistics</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+              <Quote size={32} className="text-blue-600" />
+              <p className="text-slate-700 text-sm font-medium leading-relaxed">
+                "Their air freight express guarantees 24-hour turnaround for our urgent electronics cargo. The live map interface gives our clients total peace of mind."
+              </p>
+              <div>
+                <p className="font-extrabold text-slate-900 text-sm">Sarah Jenkins</p>
+                <p className="text-xs font-semibold text-slate-400">Operations Director, TechExpress</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-6">
+              <Quote size={32} className="text-blue-600" />
+              <p className="text-slate-700 text-sm font-medium leading-relaxed">
+                "Contract warehousing and fulfillment with SwiftLink reduced our storage overhead by 30% while improving last-mile delivery times."
+              </p>
+              <div>
+                <p className="font-extrabold text-slate-900 text-sm">David Chen</p>
+                <p className="text-xs font-semibold text-slate-400">Logistics Manager, Oceanica Freight</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. FAQ SECTION */}
       <section className="py-24 bg-slate-50 border-t border-slate-200/80">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14 space-y-3">
@@ -360,7 +492,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Call to Action Banner */}
+      {/* 11. CALL TO ACTION BANNER */}
       <section className="py-20 bg-blue-600 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-6 relative z-10">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight">
