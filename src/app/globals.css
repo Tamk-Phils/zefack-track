@@ -13,13 +13,13 @@
 }
 
 :root {
-  --background: #090d16;
-  --foreground: #f8fafc;
-  --primary: #00f2fe;
-  --primary-glow: rgba(0, 242, 254, 0.35);
-  --accent: #7c3aed;
-  --surface: #0f172a;
-  --surface-border: rgba(255, 255, 255, 0.08);
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #2563eb;
+  --primary-glow: rgba(37, 99, 235, 0.25);
+  --accent: #3b82f6;
+  --surface: #ffffff;
+  --surface-border: rgba(226, 232, 240, 0.8);
 }
 
 html, body {
