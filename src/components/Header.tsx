@@ -1,16 +1,31 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, X, Navigation, Globe, ChevronDown, User, Mail, Phone, Clock, Facebook, Twitter, Youtube, Linkedin, ArrowRight, ShieldCheck, Search } from "lucide-react";
+import { Menu, X, Navigation, Globe, ChevronDown, ChevronRight, User, Mail, Phone, Clock, Facebook, Twitter, Youtube, Linkedin, ArrowRight, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [selectedLang, setSelectedLang] = useState("EN");
+    const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 20) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         if (isMobileMenuOpen) {
@@ -25,6 +40,7 @@ export default function Header() {
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
+        setIsMobileServicesOpen(false);
         setIsServicesOpen(false);
         setIsLangOpen(false);
     }, [pathname]);
@@ -47,8 +63,12 @@ export default function Header() {
     const languages = ["EN", "ES", "FR", "DE"];
 
     return (
-        <header className="fixed top-0 w-full z-[100] bg-white border-b border-slate-200/80 shadow-sm transition-all">
-            {/* Top Announcement Bar - Matching theglobalcargo style */}
+        <header className={`fixed top-0 w-full z-[100] transition-all duration-300 ${
+            isScrolled 
+                ? "bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-md py-0" 
+                : "bg-white border-b border-slate-200/80 shadow-sm"
+        }`}>
+            {/* Top Announcement Bar - Hidden on small mobile screens */}
             <div className="bg-slate-900 text-slate-300 text-xs py-2 px-6 border-b border-slate-800 hidden md:block">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-6">
@@ -80,17 +100,17 @@ export default function Header() {
             </div>
 
             {/* Main Navbar */}
-            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 h-18 sm:h-20 flex items-center justify-between">
                 {/* Brand Logo */}
-                <Link href="/" className="flex items-center gap-3 group shrink-0">
-                    <div className="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform duration-200">
-                        <Navigation size={22} className="transform rotate-45" />
+                <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform duration-200">
+                        <Navigation size={20} className="transform rotate-45 sm:w-[22px] sm:h-[22px]" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-2xl font-black tracking-tight text-slate-900 font-display">
+                        <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 font-display">
                             SwiftLink <span className="text-blue-600">Logistics</span>
                         </span>
-                        <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest -mt-1">
+                        <span className="text-[9px] sm:text-[10px] font-extrabold text-blue-600 uppercase tracking-widest -mt-1">
                             Locate Your Parcel Anywhere Anytime
                         </span>
                     </div>
@@ -178,7 +198,7 @@ export default function Header() {
                     <div className="relative">
                         <button
                             onClick={() => setIsLangOpen(!isLangOpen)}
-                            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 transition-colors"
+                            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 transition-colors cursor-pointer"
                         >
                             <Globe size={14} className="text-blue-600" />
                             <span>{selectedLang}</span>
@@ -194,7 +214,7 @@ export default function Header() {
                                             setSelectedLang(lang);
                                             setIsLangOpen(false);
                                         }}
-                                        className="w-full text-left px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                        className="w-full text-left px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
                                     >
                                         {lang} Language
                                     </button>
@@ -206,7 +226,7 @@ export default function Header() {
                     {/* Get a Quote Button */}
                     <Link
                         href="/quote"
-                        className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 group"
+                        className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 group cursor-pointer"
                     >
                         <span>Get a Quote</span>
                         <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -222,9 +242,9 @@ export default function Header() {
                     </Link>
                 </div>
 
-                {/* Mobile Menu Button */}
+                {/* Mobile Hamburger Button */}
                 <button
-                    className="lg:hidden text-slate-800 p-2.5 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-all cursor-pointer shrink-0"
+                    className="lg:hidden text-slate-800 p-2 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-all cursor-pointer shrink-0"
                     onClick={toggleMobileMenu}
                     aria-label="Toggle Navigation Menu"
                 >
@@ -232,65 +252,124 @@ export default function Header() {
                 </button>
             </div>
 
-            {/* Mobile Menu Drawer */}
-            {isMobileMenuOpen && (
-                <div className="lg:hidden bg-white border-b border-slate-200 px-6 py-6 shadow-2xl animate-in slide-in-from-top-2 duration-200 ease-out max-h-[85vh] overflow-y-auto">
-                    <div className="flex flex-col gap-4">
-                        <Link
-                            href="/"
+            {/* Mobile Menu Drawer + Backdrop (Matching theglobalcargo mobile drawer) */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <>
+                        {/* Backdrop overlay */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            href="/about"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
-                        >
-                            About Us
-                        </Link>
-                        <Link
-                            href="/usage"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
-                        >
-                            Our Services
-                        </Link>
-                        <Link
-                            href="/tracking"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
-                        >
-                            Real Time Tracking
-                        </Link>
-                        <Link
-                            href="/contact"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
-                        >
-                            Contact Us
-                        </Link>
+                            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[90] lg:hidden"
+                        />
 
-                        <div className="pt-4 flex flex-col gap-3">
-                            <Link
-                                href="/quote"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="w-full text-center bg-blue-600 text-white font-extrabold text-sm py-3 rounded-xl shadow-md"
-                            >
-                                Get a Quote
-                            </Link>
-                            <Link
-                                href="/login"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="w-full text-center bg-slate-100 text-slate-800 font-extrabold text-sm py-3 rounded-xl border border-slate-200"
-                            >
-                                Client Portal Login
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            )}
+                        {/* Slide Down Mobile Navigation Panel */}
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.25, ease: "easeInOut" }}
+                            className="absolute top-full left-0 w-full bg-white border-b border-slate-200 px-6 py-6 shadow-2xl z-[100] lg:hidden max-h-[80vh] overflow-y-auto"
+                        >
+                            <div className="flex flex-col gap-1.5 text-slate-900">
+                                <Link
+                                    href="/"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`text-base font-extrabold py-3 px-3 rounded-xl transition-colors ${
+                                        pathname === "/" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50"
+                                    }`}
+                                >
+                                    Home
+                                </Link>
+
+                                <Link
+                                    href="/about"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`text-base font-extrabold py-3 px-3 rounded-xl transition-colors ${
+                                        pathname === "/about" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50"
+                                    }`}
+                                >
+                                    About Us
+                                </Link>
+
+                                {/* Accordion for Our Services in Mobile */}
+                                <div className="border-y border-slate-100 my-1 py-1">
+                                    <button
+                                        onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
+                                        className="w-full flex items-center justify-between text-base font-extrabold py-3 px-3 rounded-xl hover:bg-slate-50 text-slate-900 cursor-pointer"
+                                    >
+                                        <span>Our Services</span>
+                                        <ChevronDown size={18} className={`transition-transform duration-200 text-blue-600 ${isMobileServicesOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {isMobileServicesOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="overflow-hidden pl-4 space-y-1 py-1"
+                                            >
+                                                {serviceItems.map((item) => (
+                                                    <Link
+                                                        key={item.name}
+                                                        href={item.href}
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                        className="flex items-center gap-2 text-xs font-bold text-slate-700 py-2 px-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                                    >
+                                                        <ChevronRight size={12} className="text-blue-600" />
+                                                        <span>{item.name}</span>
+                                                    </Link>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <Link
+                                    href="/tracking"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`text-base font-extrabold py-3 px-3 rounded-xl transition-colors ${
+                                        pathname === "/tracking" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50"
+                                    }`}
+                                >
+                                    Real Time Tracking
+                                </Link>
+
+                                <Link
+                                    href="/contact"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`text-base font-extrabold py-3 px-3 rounded-xl transition-colors ${
+                                        pathname === "/contact" ? "bg-blue-50 text-blue-600" : "hover:bg-slate-50"
+                                    }`}
+                                >
+                                    Contact Us
+                                </Link>
+
+                                <div className="pt-4 mt-2 border-t border-slate-100 flex flex-col gap-3">
+                                    <Link
+                                        href="/quote"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <span>Get a Quote</span>
+                                        <ArrowRight size={16} />
+                                    </Link>
+                                    <Link
+                                        href="/login"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="w-full text-center bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-sm py-3.5 rounded-xl border border-slate-200 transition-all"
+                                    >
+                                        Client Portal Login
+                                    </Link>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </header>
     );
 }
