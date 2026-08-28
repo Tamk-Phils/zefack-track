@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Package, MapPin, AlertCircle, User, FileText, Mail, Copy, Check, ChevronRight, Zap, Download, Sparkles, Clock, Truck, ShieldCheck, Headphones, Bell } from "lucide-react";
+import { Package, MapPin, AlertCircle, User, FileText, Mail, Copy, Check, ChevronRight, Zap, Download, Sparkles, Clock, Truck, ShieldCheck, Headphones, Bell, Globe, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { Shipment, ShipmentUpdate } from "@/types";
@@ -15,6 +15,7 @@ export default function TrackingSearch() {
     const [result, setResult] = useState<Shipment | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isCopying, setIsCopying] = useState(false);
+    const [showMap, setShowMap] = useState(false);
 
     // Preset sample codes for instant demo testing
     const sampleTrackingCodes = ["VTX948210394", "VTX104928172"];
@@ -297,23 +298,63 @@ export default function TrackingSearch() {
                                 </div>
                             </div>
 
-                            {/* Live Satellite GPS Map */}
-                            <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative">
-                                <div className="absolute top-4 left-4 z-[400] bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-xl text-white flex items-center gap-3">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-                                    <span className="text-xs font-bold uppercase tracking-wider">SWIFTLINK LIVE SATELLITE GPS</span>
+                            {/* Optional Live Satellite GPS Map Toggle */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
+                                            <Globe size={20} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-extrabold text-slate-900 text-sm md:text-base">Interactive Satellite GPS Map</h4>
+                                            <p className="text-slate-500 text-xs font-medium">Real-time route telemetry & transit tracking (Optional)</p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowMap(!showMap)}
+                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer shadow-sm ${
+                                            showMap 
+                                                ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' 
+                                                : 'bg-white text-slate-700 border-slate-200 hover:border-blue-600 hover:text-blue-600'
+                                        }`}
+                                    >
+                                        <MapPin size={15} />
+                                        <span>{showMap ? "Hide Satellite Map" : "View Satellite Map"}</span>
+                                        <ChevronDown size={15} className={`transition-transform duration-300 ${showMap ? "rotate-180" : ""}`} />
+                                    </button>
                                 </div>
-                                <LiveMap
-                                    lat={result.latitude}
-                                    lng={result.longitude}
-                                    originLat={result.origin_lat}
-                                    originLng={result.origin_lng}
-                                    originName={result.origin}
-                                    destinationLat={result.destination_lat}
-                                    destinationLng={result.destination_lng}
-                                    destinationName={result.destination}
-                                    currentLocationName={result.updates?.[0]?.location || result.origin}
-                                />
+
+                                <AnimatePresence>
+                                    {showMap && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative">
+                                                <div className="absolute top-4 left-4 z-[400] bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-xl text-white flex items-center gap-3">
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+                                                    <span className="text-xs font-bold uppercase tracking-wider">SWIFTLINK LIVE SATELLITE GPS</span>
+                                                </div>
+                                                <LiveMap
+                                                    lat={result.latitude}
+                                                    lng={result.longitude}
+                                                    originLat={result.origin_lat}
+                                                    originLng={result.origin_lng}
+                                                    originName={result.origin}
+                                                    destinationLat={result.destination_lat}
+                                                    destinationLng={result.destination_lng}
+                                                    destinationName={result.destination}
+                                                    currentLocationName={result.updates?.[0]?.location || result.origin}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             {/* Shipment Details & Cargo Info */}

@@ -14,6 +14,14 @@ function LoaderContent() {
   }, [pathname, searchParams]);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoading) {
+      timer = setTimeout(() => setIsLoading(false), 3500);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest("a");
