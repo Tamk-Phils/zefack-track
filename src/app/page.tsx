@@ -48,23 +48,25 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Hero Section - Matching Uploaded Reference Image */}
+      {/* Hero Section - Matching Uploaded Reference Image with Package Display */}
       <section className="relative min-h-[85vh] flex items-center pt-28 pb-24 overflow-hidden bg-slate-900">
-        {/* Freight Semi-Truck High-Res Background Image */}
+        {/* Express Package Background Image for Mobile/Smaller Screens - Clean overlay without blur */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=2000"
-            alt="SwiftLink Logistics Semi Truck"
+            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
+            alt="SwiftLink Express Package Logistics"
             fill
             priority
-            className="object-cover object-center opacity-45"
+            className="object-cover object-center opacity-40 lg:opacity-25"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-transparent z-10" />
+          {/* Pure dark gradient overlay without any blur coating */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0b192c] via-[#0b192c]/90 to-[#0b192c]/80 z-10" />
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-8 space-y-8">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -92,6 +94,32 @@ export default function Home() {
                 <TrackingSearch />
               </motion.div>
             </div>
+
+            {/* Right Package Image Card (Desktop Showcase) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="hidden lg:block lg:col-span-5"
+            >
+              <div className="relative h-[440px] rounded-3xl overflow-hidden border border-slate-700/60 shadow-2xl group">
+                <Image
+                  src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?q=80&w=1200"
+                  alt="SwiftLink Express Parcel Package"
+                  fill
+                  priority
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b192c] via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6 p-5 rounded-2xl bg-slate-900/90 border border-slate-700/60 space-y-2">
+                  <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                    <Package size={16} /> SWIFTLINK PARCEL EXPRESS
+                  </div>
+                  <p className="text-white font-extrabold text-base">Real-Time Package Surveillance</p>
+                  <p className="text-slate-400 text-xs">Direct GPS sync across air, sea, and ground transit hubs.</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

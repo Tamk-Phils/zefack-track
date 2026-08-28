@@ -128,23 +128,6 @@ export default function TrackingSearch() {
                         <span className="hover:text-blue-600 transition-colors">Aramex</span>
                     </div>
                 </div>
-
-                {/* Demo Preset Chips */}
-                <div className="flex items-center gap-2">
-                    <span className="text-slate-400 text-[11px] font-medium flex items-center gap-1">
-                        <Sparkles size={12} className="text-blue-500" /> Demo Tracking:
-                    </span>
-                    {sampleTrackingCodes.map((code) => (
-                        <button
-                            key={code}
-                            type="button"
-                            onClick={() => handleSampleClick(code)}
-                            className="px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white font-mono text-xs font-bold transition-all border border-blue-100"
-                        >
-                            {code}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* Error Display */}
