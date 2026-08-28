@@ -1,152 +1,162 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Mail, MessageSquare, Phone, MapPin, Globe, Sparkles, Radar, Send } from "lucide-react";
+import { Mail, MessageSquare, Phone, MapPin, Globe, Send, Zap, Clock } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function ContactPage() {
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 4000);
+    };
+
     return (
-        <main className="min-h-screen bg-white relative overflow-hidden py-32 text-slate-900">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-accent/5 rounded-full blur-[150px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
-
-            <div className="container mx-auto px-6 max-w-7xl relative z-10">
-                <div className="text-center mb-24 max-w-4xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-3 bg-white text-primary px-6 py-2.5 rounded-sm text-[10px] font-black uppercase tracking-[0.4em] border border-slate-200 mb-10 shadow-sm"
-                    >
-                        <Radar size={14} className="animate-spin-slow" />
-                        <span className="text-slate-500">Customer Support System</span>
-                    </motion.div>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-6xl md:text-8xl font-black text-slate-900 mb-8 uppercase tracking-tighter leading-[0.85]"
-                    >
-                        GET IN <br/><span className="text-primary italic">TOUCH.</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-xl text-slate-500 font-bold max-w-3xl mx-auto uppercase tracking-tight leading-relaxed"
-                    >
-                        Our team is here to help you with anything you need. Whether you have a question about a shipment or want to start a business account, we're ready to chat.
-                    </motion.p>
+        <main className="min-h-screen bg-slate-50 text-slate-900 pt-28 md:pt-36 pb-24">
+            {/* Page Header */}
+            <div className="bg-slate-900 text-white py-16 mb-16 relative overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-4">
+                    <span className="text-xs font-black uppercase tracking-widest text-blue-400">24/7 GLOBAL SUPPORT</span>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tight">Contact SwiftLink Logistics</h1>
+                    <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                        Our team is here to help you with anything you need. Whether you have a question about consignment tracking or custom cargo quotes.
+                    </p>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24 max-w-4xl mx-auto">
-                    {[
-                        { 
-                            icon: MessageSquare, 
-                            title: "LIVE CHAT SUPPORT", 
-                            desc: "Talk to a customer support specialist right now through our official live chat assistant.", 
-                            action: "OPEN LIVE CHAT", 
-                            href: "/contact",
-                            color: "text-primary" 
-                        },
-                        { 
-                            icon: Mail, 
-                            title: "EMAIL SUPPORT", 
-                            desc: "Send us a direct message for package inquiries, dispatch updates, and account support.", 
-                            action: "SUPPORT@SWIFTLINKSHIPPING.COM", 
-                            href: "mailto:support@swiftlinkshipping.com",
-                            color: "text-primary" 
-                        }
-                    ].map((item, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 + i * 0.1 }}
-                            className="bg-slate-50 p-12 rounded-sm border border-slate-200 shadow-sm hover:shadow-2xl hover:bg-white transition-all group"
-                        >
-                            <div className={`w-16 h-16 bg-primary/5 ${item.color} rounded-sm flex items-center justify-center mb-8 border border-primary/10 group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
-                                <item.icon size={32} />
-                            </div>
-                            <h3 className="text-[10px] font-black text-slate-900 mb-4 uppercase tracking-[0.3em]">{item.title}</h3>
-                            <p className="text-slate-500 font-bold text-sm mb-8 uppercase tracking-tight leading-relaxed">{item.desc}</p>
-                            <a href={item.href} className="text-primary font-black text-[10px] uppercase tracking-widest hover:text-slate-900 transition-colors flex items-center gap-2 break-all">
-                                {item.action} <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                            </a>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Form Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="bg-white rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-200"
-                >
-                    <div className="md:w-2/5 p-16 bg-slate-900 text-white flex flex-col justify-between relative overflow-hidden">
-                        {/* Background institutional image */}
-                        <div className="absolute inset-0 opacity-[0.07] z-0 pointer-events-none grayscale">
-                             <Image 
-                                src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000" 
-                                alt="Support Center" 
-                                fill 
-                                className="object-cover"
-                            />
+            <div className="max-w-7xl mx-auto px-6">
+                {/* 3 Contact Info Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                    <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <Mail size={26} />
                         </div>
-                        
-                        <div className="relative z-10">
-                            <h3 className="text-4xl font-black mb-6 uppercase tracking-tighter leading-tight">SEND A <br/><span className="text-primary">MESSAGE.</span></h3>
-                            <p className="text-white/40 font-bold leading-relaxed mb-16 uppercase tracking-tight text-sm">Fill out the form and our support team will respond promptly to your inquiry.</p>
-                            <div className="space-y-10">
-                                <div className="flex items-start gap-6">
-                                    <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-sm flex items-center justify-center text-primary shrink-0">
-                                        <Mail size={20} />
-                                    </div>
-                                    <div>
-                                        <p className="font-black text-white text-[10px] uppercase tracking-widest mb-1">OFFICIAL EMAIL</p>
-                                        <p className="text-white/40 text-xs font-bold uppercase tracking-tight break-all">support@swiftlinkshipping.com</p>
-                                    </div>
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-400">EMAIL SUPPORT</span>
+                        <h3 className="text-xl font-black text-slate-900">Official Email</h3>
+                        <a href="mailto:support@swiftlinkshipping.com" className="text-blue-600 font-extrabold text-sm block hover:underline break-all">
+                            support@swiftlinkshipping.com
+                        </a>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <Phone size={26} />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-400">HOTLINE</span>
+                        <h3 className="text-xl font-black text-slate-900">Phone Support</h3>
+                        <p className="text-blue-600 font-extrabold text-sm">
+                            +1 (800) 555-SWIFT
+                        </p>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-md space-y-4 hover:shadow-xl transition-all">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <Clock size={26} />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-400">HOURS</span>
+                        <h3 className="text-xl font-black text-slate-900">Operating Hours</h3>
+                        <p className="text-slate-600 text-sm font-semibold">
+                            24/7 Satellite Global Dispatch & Waybill Tracking
+                        </p>
+                    </div>
+                </div>
+
+                {/* Form & Info Section */}
+                <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+                    <div className="lg:col-span-5 bg-slate-900 text-white p-10 md:p-14 flex flex-col justify-between relative">
+                        <div className="space-y-6 relative z-10">
+                            <span className="text-xs font-black uppercase tracking-widest text-blue-400">SEND A DIRECT INQUIRY</span>
+                            <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                                Reach Out to Our Logistics Specialists
+                            </h2>
+                            <p className="text-slate-300 text-sm font-medium leading-relaxed">
+                                Fill out the form and our global support desk will respond promptly with consignment tracking or freight details.
+                            </p>
+
+                            <div className="space-y-4 pt-6 border-t border-slate-800 text-xs font-semibold text-slate-300">
+                                <div className="flex items-center gap-3">
+                                    <Globe size={18} className="text-blue-400 shrink-0" />
+                                    <span>Multimodal International Logistics Network</span>
                                 </div>
-                                <div className="flex items-start gap-6">
-                                    <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-sm flex items-center justify-center text-primary shrink-0">
-                                        <Globe size={20} />
-                                    </div>
-                                    <div>
-                                        <p className="font-black text-white text-[10px] uppercase tracking-widest mb-1">GLOBAL DISPATCH NETWORK</p>
-                                        <p className="text-white/40 text-xs font-bold uppercase tracking-tight">Worldwide Air & Freight Operations</p>
-                                    </div>
+                                <div className="flex items-center gap-3">
+                                    <Zap size={18} className="text-blue-400 shrink-0" />
+                                    <span>Real-Time Satellite GPS Waybill Telemetry</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="md:w-3/5 p-16 bg-white">
-                        <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">First Name</label>
-                                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-sm px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary transition-all placeholder:text-slate-200 outline-none" placeholder="e.g. John" />
+
+                    <div className="lg:col-span-7 p-10 md:p-14 bg-white">
+                        {submitted ? (
+                            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-8 rounded-2xl text-center space-y-3">
+                                <h3 className="text-2xl font-black">Message Received!</h3>
+                                <p className="text-sm font-medium">Thank you for reaching out to SwiftLink Logistics. Our support team will get back to you shortly.</p>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-extrabold uppercase tracking-wider text-slate-700">First Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
+                                            placeholder="e.g. John"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Last Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
+                                            placeholder="e.g. Smith"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Last Name</label>
-                                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-sm px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary transition-all placeholder:text-slate-200 outline-none" placeholder="e.g. Smith" />
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Email Address</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
+                                        placeholder="name@company.com"
+                                    />
                                 </div>
-                            </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Your Email</label>
-                                <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-sm px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary transition-all placeholder:text-slate-200 outline-none" placeholder="name@email.com" />
-                            </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Message</label>
-                                <textarea rows={5} className="w-full bg-slate-50 border border-slate-200 rounded-sm px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary transition-all resize-none placeholder:text-slate-200 outline-none" placeholder="How can we help?" />
-                            </div>
-                            <button className="w-full bg-slate-900 hover:bg-primary text-white font-black text-[10px] uppercase tracking-[0.4em] py-6 rounded-sm transition-all shadow-xl flex items-center justify-center gap-3 group">
-                                <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                SEND MESSAGE
-                            </button>
-                        </form>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Consignment No. (Optional)</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
+                                        placeholder="Ex: VTX948210394"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-extrabold uppercase tracking-wider text-slate-700">Your Message</label>
+                                    <textarea
+                                        rows={4}
+                                        required
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 transition-colors resize-none"
+                                        placeholder="How can we assist your shipment today?"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Send size={16} />
+                                    <span>Send Message</span>
+                                </button>
+                            </form>
+                        )}
                     </div>
-                </motion.div>
+                </div>
             </div>
         </main>
     );

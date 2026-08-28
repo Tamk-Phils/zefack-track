@@ -1,121 +1,184 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Twitter, Linkedin, Facebook, Mail, ArrowRight, Instagram, Navigation, ShieldCheck, Truck } from "lucide-react";
+import { Mail, ArrowRight, Navigation, ShieldCheck, Phone, MapPin, Facebook, Twitter, Youtube, Instagram, Linkedin } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+    const [newsletterEmail, setNewsletterEmail] = useState("");
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    const handleSubscribe = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newsletterEmail) return;
+        setIsSubscribed(true);
+        setTimeout(() => {
+            setNewsletterEmail("");
+            setIsSubscribed(false);
+        }, 4000);
+    };
+
     return (
-        <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-20 pb-12 relative overflow-hidden">
+        <footer className="bg-slate-950 text-slate-300 border-t border-slate-900 pt-20 pb-12 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
+                {/* Newsletter Subscription Banner - Matching theglobalcargo */}
+                <div className="bg-blue-600 rounded-3xl p-8 md:p-12 text-white shadow-2xl mb-16 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div className="space-y-2 text-center lg:text-left max-w-xl">
+                        <span className="text-blue-200 text-xs font-black uppercase tracking-widest">STAY CONNECTED</span>
+                        <h3 className="text-2xl md:text-4xl font-black tracking-tight">Subscribe Our Newsletter</h3>
+                        <p className="text-blue-100 text-sm font-medium leading-relaxed">
+                            Don’t miss out on exciting updates, exclusive freight rates, and global logistics insights from SwiftLink Logistics!
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleSubscribe} className="w-full lg:w-auto flex-1 max-w-md">
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="email"
+                                    required
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                                    placeholder="Enter your email address"
+                                    className="w-full bg-white text-slate-900 py-3.5 pl-11 pr-4 rounded-xl text-sm font-semibold focus:outline-none placeholder:text-slate-400 shadow-inner"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-lg transition-all shrink-0 uppercase tracking-wider flex items-center justify-center gap-2"
+                            >
+                                {isSubscribed ? "Subscribed!" : "Subscribe"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                {/* Main 4-Column Footer Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    {/* Brand Column */}
+                    {/* Brand & Mission */}
                     <div className="space-y-6">
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                                <Navigation size={20} className="transform rotate-45" />
+                            <div className="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                                <Navigation size={22} className="transform rotate-45" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xl font-black tracking-tight text-white font-display">
+                                <span className="text-2xl font-black tracking-tight text-white font-display">
                                     SwiftLink <span className="text-blue-500">Logistics</span>
                                 </span>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1">
-                                    Express Global Tracking
+                                <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest -mt-1">
+                                    Locate Your Parcel Anywhere Anytime
                                 </span>
                             </div>
                         </Link>
                         
                         <p className="text-slate-400 text-sm leading-relaxed font-normal">
-                            Fast, reliable and secure package tracking. Powered by real-time satellite GPS telemetry and connected with 180+ global carrier networks.
+                            Comprehensive international shipping solutions. Connecting you to endless possibilities through real-time satellite GPS package surveillance.
                         </p>
 
-                        <div className="flex gap-3">
-                            {[Twitter, Linkedin, Github, Instagram].map((Icon, i) => (
-                                <Link key={i} href="#" className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
-                                    <Icon size={16} />
-                                </Link>
+                        <div className="space-y-2.5 text-xs text-slate-300 font-medium pt-1">
+                            <div className="flex items-center gap-3 text-slate-400">
+                                <Mail size={14} className="text-blue-400 shrink-0" />
+                                <span>support@swiftlinkshipping.com</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-slate-400">
+                                <Phone size={14} className="text-blue-400 shrink-0" />
+                                <span>+1 (800) 555-SWIFT</span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2.5 pt-2">
+                            {[Facebook, Twitter, Youtube, Linkedin, Instagram].map((Icon, i) => (
+                                <a key={i} href="#" className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
+                                    <Icon size={15} />
+                                </a>
                             ))}
                         </div>
                     </div>
 
-                    {/* Logistics Services */}
+                    {/* Company Column */}
                     <div>
-                        <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-6">
-                            Freight Services
+                        <h4 className="text-white font-extrabold uppercase tracking-wider text-xs mb-6 border-l-2 border-blue-500 pl-3">
+                            Company
                         </h4>
-                        <ul className="space-y-3">
-                            {['Road Express Freight', 'Air Cargo Transit', 'Ocean Container Lines', 'Express Parcel Tracking', 'Customs Brokerage'].map(item => (
-                                <li key={item}>
-                                    <Link href="/usage" className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-all flex items-center gap-2 group">
-                                        <ArrowRight size={13} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-400 transition-all" />
-                                        {item}
+                        <ul className="space-y-3 text-sm">
+                            {[
+                                { name: "About Us", href: "/about" },
+                                { name: "Contact Us", href: "/contact" },
+                                { name: "Return Policies", href: "/terms" },
+                                { name: "Terms And Conditions", href: "/terms" },
+                                { name: "Privacy Policy", href: "/privacy" },
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                                        <ArrowRight size={12} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-400 transition-all" />
+                                        <span>{item.name}</span>
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Quick Access */}
+                    {/* Services Column */}
                     <div>
-                        <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-6">
+                        <h4 className="text-white font-extrabold uppercase tracking-wider text-xs mb-6 border-l-2 border-blue-500 pl-3">
+                            Services
+                        </h4>
+                        <ul className="space-y-3 text-sm">
+                            {[
+                                { name: "Ocean Freight", href: "/usage#ocean" },
+                                { name: "Road Transport", href: "/usage#road" },
+                                { name: "Air Freight", href: "/usage#air" },
+                                { name: "Warehousing", href: "/usage#warehouse" },
+                                { name: "Cargo Insurance", href: "/usage#insurance" },
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link href={item.href} className="text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                                        <ArrowRight size={12} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-400 transition-all" />
+                                        <span>{item.name}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Quick Links Column */}
+                    <div>
+                        <h4 className="text-white font-extrabold uppercase tracking-wider text-xs mb-6 border-l-2 border-blue-500 pl-3">
                             Quick Links
                         </h4>
-                        <ul className="space-y-3">
+                        <ul className="space-y-3 text-sm">
                             {[
-                                { name: 'Track Package', href: '/tracking' },
-                                { name: 'System Status', href: '/alerts' },
-                                { name: 'Freight Quote', href: '/quote' },
-                                { name: 'Support Center', href: '/resources' },
-                                { name: 'Contact Support', href: '/contact' }
-                            ].map(item => (
+                                { name: "Request A Quote", href: "/quote" },
+                                { name: "Track & Trace", href: "/tracking" },
+                                { name: "Find A Location", href: "/contact" },
+                                { name: "Help & FAQ", href: "/resources" },
+                                { name: "Client Portal Login", href: "/login" },
+                            ].map((item) => (
                                 <li key={item.name}>
-                                    <Link href={item.href} className="text-slate-400 hover:text-blue-400 text-sm font-medium transition-all flex items-center gap-2 group">
-                                        <ArrowRight size={13} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-400 transition-all" />
-                                        {item.name}
+                                    <Link href={item.href} className="text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                                        <ArrowRight size={12} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-blue-400 transition-all" />
+                                        <span>{item.name}</span>
                                     </Link>
                                 </li>
                             ))}
                         </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div>
-                        <h4 className="text-white font-bold uppercase tracking-wider text-xs mb-6">
-                            Contact Support
-                        </h4>
-                        <div className="space-y-4">
-                            <div className="p-4 rounded-xl bg-slate-800 border border-slate-700 space-y-1">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-400">EMAIL</p>
-                                <a href="mailto:support@swiftlinkshipping.com" className="text-white text-xs font-bold hover:text-blue-400 transition-colors block break-all">
-                                    support@swiftlinkshipping.com
-                                </a>
-                            </div>
-
-                            <div className="p-4 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-3">
-                                <ShieldCheck size={20} className="text-emerald-400 shrink-0" />
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">NETWORK STATUS</p>
-                                    <p className="text-slate-300 text-xs font-semibold">100% Operational Worldwide</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                {/* Newsletter & Copyright */}
-                <div className="pt-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-                    <p className="text-slate-500 text-xs font-medium">
-                        © 2026 SwiftLink Logistics Inc. All rights reserved.
+                {/* Copyright & Sub-links */}
+                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left text-xs font-medium text-slate-400">
+                    <p>
+                        © 2026 SwiftLink Shipping Logistics. All rights reserved. Locate Your Parcel Anywhere Anytime.
                     </p>
-                    <div className="flex gap-6 text-xs font-medium text-slate-400">
-                        <Link href="/privacy" className="hover:text-blue-400 transition-colors">Privacy Policy</Link>
-                        <Link href="/terms" className="hover:text-blue-400 transition-colors">Terms of Service</Link>
-                        <Link href="/cookies" className="hover:text-blue-400 transition-colors">Cookie Preferences</Link>
+                    <div className="flex gap-6">
+                        <Link href="/privacy" className="hover:text-blue-400 transition-colors">Privacy</Link>
+                        <Link href="/terms" className="hover:text-blue-400 transition-colors">Terms</Link>
+                        <Link href="/resources" className="hover:text-blue-400 transition-colors">Sitemap</Link>
                     </div>
                 </div>
             </div>
         </footer>
     );
 }
-
-

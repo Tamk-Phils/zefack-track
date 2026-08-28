@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, X, Navigation, Globe, ChevronDown, User } from "lucide-react";
+import { Menu, X, Navigation, Globe, ChevronDown, User, Mail, Phone, Clock, Facebook, Twitter, Youtube, Linkedin, ArrowRight, ShieldCheck, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [selectedLang, setSelectedLang] = useState("EN");
     const pathname = usePathname();
 
-    // Lock body scroll when mobile menu is open to prevent background jank
     useEffect(() => {
         if (isMobileMenuOpen) {
             document.body.style.overflow = "hidden";
@@ -23,74 +23,164 @@ export default function Header() {
         };
     }, [isMobileMenuOpen]);
 
-    // Close mobile menu on route change
     useEffect(() => {
         setIsMobileMenuOpen(false);
+        setIsServicesOpen(false);
         setIsLangOpen(false);
     }, [pathname]);
-
-    const navLinks = [
-        { name: "Home", href: "/" },
-        { name: "Track Package", href: "/tracking" },
-        { name: "Services", href: "/usage" },
-        { name: "About Us", href: "/about" },
-        { name: "Contact", href: "/contact" },
-    ];
-
-    const languages = ["EN", "ES", "FR", "DE"];
 
     const toggleMobileMenu = useCallback(() => {
         setIsMobileMenuOpen(prev => !prev);
     }, []);
 
+    const serviceItems = [
+        { name: "Air Freight", desc: "Rapid global air cargo corridors", href: "/usage#air" },
+        { name: "Warehouse Storage", desc: "Secure climate-controlled logistics hubs", href: "/usage#warehouse" },
+        { name: "Ocean Freight", desc: "Maritime container lines & vessel booking", href: "/usage#ocean" },
+        { name: "Logistics Solutions", desc: "End-to-end supply chain management", href: "/usage#logistics" },
+        { name: "Road Freight", desc: "Interstate ground express transport", href: "/usage#road" },
+        { name: "Rail Freight", desc: "Eco-friendly bulk rail transport", href: "/usage#rail" },
+        { name: "Packaging", desc: "Industrial protective packaging", href: "/usage#packaging" },
+        { name: "Cargo Insurance", desc: "Comprehensive transit risk protection", href: "/usage#insurance" },
+    ];
+
+    const languages = ["EN", "ES", "FR", "DE"];
+
     return (
-        <header className="fixed top-0 w-full z-[100] bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm transition-colors">
+        <header className="fixed top-0 w-full z-[100] bg-white border-b border-slate-200/80 shadow-sm transition-all">
+            {/* Top Announcement Bar - Matching theglobalcargo style */}
+            <div className="bg-slate-900 text-slate-300 text-xs py-2 px-6 border-b border-slate-800 hidden md:block">
+                <div className="max-w-7xl mx-auto flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                        <a href="mailto:support@swiftlinkshipping.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+                            <Mail size={14} className="text-blue-400" />
+                            <span>support@swiftlinkshipping.com</span>
+                        </a>
+                        <div className="flex items-center gap-2">
+                            <Phone size={14} className="text-blue-400" />
+                            <span>+1 (800) 555-SWIFT</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-400">
+                            <Clock size={14} className="text-blue-400" />
+                            <span>24/7 Satellite Global Dispatch</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3 pr-4 border-r border-slate-700">
+                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="Facebook"><Facebook size={13} /></a>
+                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="Twitter"><Twitter size={13} /></a>
+                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="YouTube"><Youtube size={13} /></a>
+                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="LinkedIn"><Linkedin size={13} /></a>
+                        </div>
+                        <Link href="/resources" className="hover:text-blue-400 transition-colors font-medium">Our FAQs</Link>
+                        <Link href="/quote" className="hover:text-blue-400 transition-colors font-semibold text-blue-400">Get a Quote</Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Navbar */}
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 {/* Brand Logo */}
                 <Link href="/" className="flex items-center gap-3 group shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
-                        <Navigation size={20} className="transform rotate-45" />
+                    <div className="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30 group-hover:scale-105 transition-transform duration-200">
+                        <Navigation size={22} className="transform rotate-45" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-xl font-black tracking-tight text-slate-900 font-display">
+                        <span className="text-2xl font-black tracking-tight text-slate-900 font-display">
                             SwiftLink <span className="text-blue-600">Logistics</span>
                         </span>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest -mt-1">
-                            Express Global Tracking
+                        <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest -mt-1">
+                            Locate Your Parcel Anywhere Anytime
                         </span>
                     </div>
                 </Link>
 
-                {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-9">
-                    {navLinks.map((link) => {
-                        const isActive = pathname === link.href;
-                        return (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                className={`text-sm font-semibold transition-colors relative py-1 ${
-                                    isActive ? "text-blue-600 font-bold" : "text-slate-600 hover:text-blue-600"
-                                }`}
-                            >
-                                {link.name}
-                                {isActive && (
-                                    <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-blue-600 rounded-full" />
-                                )}
-                            </Link>
-                        );
-                    })}
+                {/* Desktop Navigation Links */}
+                <nav className="hidden lg:flex items-center gap-8">
+                    <Link
+                        href="/"
+                        className={`text-sm font-bold transition-colors py-1 ${
+                            pathname === "/" ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                        }`}
+                    >
+                        Home
+                    </Link>
+
+                    <Link
+                        href="/about"
+                        className={`text-sm font-bold transition-colors py-1 ${
+                            pathname === "/about" ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                        }`}
+                    >
+                        About Us
+                    </Link>
+
+                    {/* Services Dropdown */}
+                    <div
+                        className="relative"
+                        onMouseEnter={() => setIsServicesOpen(true)}
+                        onMouseLeave={() => setIsServicesOpen(false)}
+                    >
+                        <Link
+                            href="/usage"
+                            className={`flex items-center gap-1 text-sm font-bold transition-colors py-1 ${
+                                pathname === "/usage" ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                            }`}
+                        >
+                            <span>Our Services</span>
+                            <ChevronDown size={15} className={`transition-transform duration-200 ${isServicesOpen ? 'rotate-180 text-blue-600' : ''}`} />
+                        </Link>
+
+                        {isServicesOpen && (
+                            <div className="absolute left-0 mt-1 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                                <div className="grid grid-cols-1 gap-1">
+                                    {serviceItems.map((item) => (
+                                        <Link
+                                            key={item.name}
+                                            href={item.href}
+                                            className="p-2.5 rounded-xl hover:bg-blue-50 transition-colors group flex items-start gap-3"
+                                        >
+                                            <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 shrink-0 group-hover:scale-125 transition-transform" />
+                                            <div>
+                                                <p className="text-xs font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors">{item.name}</p>
+                                                <p className="text-[11px] text-slate-500 font-medium">{item.desc}</p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <Link
+                        href="/tracking"
+                        className={`text-sm font-bold transition-colors py-1 ${
+                            pathname === "/tracking" ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                        }`}
+                    >
+                        Real Time Tracking
+                    </Link>
+
+                    <Link
+                        href="/contact"
+                        className={`text-sm font-bold transition-colors py-1 ${
+                            pathname === "/contact" ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                        }`}
+                    >
+                        Contact Us
+                    </Link>
                 </nav>
 
-                {/* Right Actions: Language Selector & Portal Login */}
-                <div className="hidden md:flex items-center gap-5">
-                    {/* Language Selector Dropdown */}
+                {/* Right Actions */}
+                <div className="hidden md:flex items-center gap-4">
+                    {/* Language Selector */}
                     <div className="relative">
                         <button
                             onClick={() => setIsLangOpen(!isLangOpen)}
-                            className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+                            className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-blue-600 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 transition-colors"
                         >
-                            <Globe size={16} className="text-slate-500" />
+                            <Globe size={14} className="text-blue-600" />
                             <span>{selectedLang}</span>
                             <ChevronDown size={14} className="text-slate-400" />
                         </button>
@@ -113,53 +203,89 @@ export default function Header() {
                         )}
                     </div>
 
-                    {/* Login CTA */}
+                    {/* Get a Quote Button */}
+                    <Link
+                        href="/quote"
+                        className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 group"
+                    >
+                        <span>Get a Quote</span>
+                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+
+                    {/* Client Portal */}
                     <Link
                         href="/login"
-                        className="flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-blue-600 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 transition-colors"
+                        className="p-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        title="Client Portal Login"
                     >
-                        <User size={14} />
-                        Client Portal
+                        <User size={18} />
                     </Link>
                 </div>
 
-                {/* Mobile Menu Button - Optimized touch & hardware acceleration */}
+                {/* Mobile Menu Button */}
                 <button
-                    className="md:hidden text-slate-800 p-2.5 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-all cursor-pointer focus:outline-none shrink-0"
+                    className="lg:hidden text-slate-800 p-2.5 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-all cursor-pointer shrink-0"
                     onClick={toggleMobileMenu}
-                    aria-label="Toggle Menu"
+                    aria-label="Toggle Navigation Menu"
                 >
                     {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
                 </button>
             </div>
 
-            {/* Mobile Menu Drawer - Hardware accelerated transition, zero layout thrashing */}
+            {/* Mobile Menu Drawer */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-white border-b border-slate-100 px-6 py-6 shadow-2xl animate-in slide-in-from-top-2 duration-200 ease-out">
+                <div className="lg:hidden bg-white border-b border-slate-200 px-6 py-6 shadow-2xl animate-in slide-in-from-top-2 duration-200 ease-out max-h-[85vh] overflow-y-auto">
                     <div className="flex flex-col gap-4">
-                        {navLinks.map((link) => (
+                        <Link
+                            href="/"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
+                        >
+                            Home
+                        </Link>
+                        <Link
+                            href="/about"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
+                        >
+                            About Us
+                        </Link>
+                        <Link
+                            href="/usage"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
+                        >
+                            Our Services
+                        </Link>
+                        <Link
+                            href="/tracking"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
+                        >
+                            Real Time Tracking
+                        </Link>
+                        <Link
+                            href="/contact"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-base font-extrabold text-slate-900 hover:text-blue-600 py-2 border-b border-slate-100"
+                        >
+                            Contact Us
+                        </Link>
+
+                        <div className="pt-4 flex flex-col gap-3">
                             <Link
-                                key={link.name}
-                                href={link.href}
+                                href="/quote"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className={`text-base font-bold transition-colors py-2.5 border-b border-slate-50 last:border-0 ${
-                                    pathname === link.href ? "text-blue-600" : "text-slate-800"
-                                }`}
+                                className="w-full text-center bg-blue-600 text-white font-extrabold text-sm py-3 rounded-xl shadow-md"
                             >
-                                {link.name}
+                                Get a Quote
                             </Link>
-                        ))}
-                        <div className="pt-4 mt-2 border-t border-slate-100 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Globe size={16} className="text-slate-400" />
-                                <span className="text-xs font-semibold text-slate-600">Lang: {selectedLang}</span>
-                            </div>
                             <Link
                                 href="/login"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl shadow-md transition-colors"
+                                className="w-full text-center bg-slate-100 text-slate-800 font-extrabold text-sm py-3 rounded-xl border border-slate-200"
                             >
-                                Client Portal
+                                Client Portal Login
                             </Link>
                         </div>
                     </div>
