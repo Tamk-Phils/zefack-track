@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function TrackingPage() {
     return (
-        <main className="min-h-screen bg-slate-50 text-slate-900 pt-28 md:pt-36 pb-24">
+        <main className="bg-slate-50 text-slate-900 pt-28 md:pt-36 pb-12">
             {/* Header Banner */}
             <section className="bg-slate-900 text-white py-16 mb-16 relative overflow-hidden">
                 <div className="absolute inset-0 z-0">
