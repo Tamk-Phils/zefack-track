@@ -25,7 +25,7 @@ export default function DashboardOverview() {
         if (typeof window === "undefined") return;
 
         const timer = setTimeout(() => {
-            const saved = localStorage.getItem("swiftlink_shipments") || localStorage.getItem("vortex_shipments");
+            const saved = localStorage.getItem("transglologistics_shipments") || localStorage.getItem("transglologistics_shipments");
             const shipments: Shipment[] = saved ? JSON.parse(saved) : [];
 
             const total = shipments.length;

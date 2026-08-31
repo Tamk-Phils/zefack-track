@@ -69,7 +69,7 @@ function LoaderContent() {
             <Navigation size={12} className="text-blue-600 absolute transform rotate-45" />
           </div>
           <div>
-            <p className="font-extrabold text-xs text-slate-900 tracking-tight">SwiftLink Logistics</p>
+            <p className="font-extrabold text-xs text-slate-900 tracking-tight">Transglologistics Logistics</p>
             <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider animate-pulse">Loading...</p>
           </div>
         </div>

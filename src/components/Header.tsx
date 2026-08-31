@@ -72,9 +72,9 @@ export default function Header() {
             <div className="bg-slate-900 text-slate-300 text-xs py-2 px-6 border-b border-slate-800 hidden md:block">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                        <a href="mailto:support@swiftlinkshipping.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+                        <a href="mailto:support@transglologistics.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
                             <Mail size={14} className="text-blue-400" />
-                            <span>support@swiftlinkshipping.com</span>
+                            <span>support@transglologistics.com</span>
                         </a>
                         <div className="flex items-center gap-2">
                             <Phone size={14} className="text-blue-400" />
@@ -108,7 +108,7 @@ export default function Header() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 font-display">
-                            SwiftLink <span className="text-blue-600">Logistics</span>
+                            Transglologistics <span className="text-blue-600">Logistics</span>
                         </span>
                         <span className="text-[9px] sm:text-[10px] font-extrabold text-blue-600 uppercase tracking-widest -mt-1">
                             Locate Your Parcel Anywhere Anytime

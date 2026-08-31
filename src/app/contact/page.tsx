@@ -19,7 +19,7 @@ export default function ContactPage() {
             <div className="bg-slate-900 text-white py-16 mb-16 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-4">
                     <span className="text-xs font-black uppercase tracking-widest text-blue-400">24/7 GLOBAL SUPPORT</span>
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tight">Contact SwiftLink Logistics</h1>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tight">Contact Transglologistics Logistics</h1>
                     <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto font-medium">
                         Our team is here to help you with anything you need. Whether you have a question about consignment tracking or custom cargo quotes.
                     </p>
@@ -35,8 +35,8 @@ export default function ContactPage() {
                         </div>
                         <span className="text-xs font-black uppercase tracking-wider text-slate-400">EMAIL SUPPORT</span>
                         <h3 className="text-xl font-black text-slate-900">Official Email</h3>
-                        <a href="mailto:support@swiftlinkshipping.com" className="text-blue-600 font-extrabold text-sm block hover:underline break-all">
-                            support@swiftlinkshipping.com
+                        <a href="mailto:support@transglologistics.com" className="text-blue-600 font-extrabold text-sm block hover:underline break-all">
+                            support@transglologistics.com
                         </a>
                     </div>
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
                         {submitted ? (
                             <div className="bg-blue-50 border border-blue-200 text-blue-800 p-8 rounded-2xl text-center space-y-3">
                                 <h3 className="text-2xl font-black">Message Received!</h3>
-                                <p className="text-sm font-medium">Thank you for reaching out to SwiftLink Logistics. Our support team will get back to you shortly.</p>
+                                <p className="text-sm font-medium">Thank you for reaching out to Transglologistics Logistics. Our support team will get back to you shortly.</p>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-6">

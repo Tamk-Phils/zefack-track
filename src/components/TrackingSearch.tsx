@@ -36,7 +36,7 @@ export default function TrackingSearch() {
             origin: "Frankfurt Hub, Germany",
             destination: "JFK Airport, New York, USA",
             sender_name: "Global Logistics Freight Corp",
-            sender_email: "dispatch@swiftlinkshipping.com",
+            sender_email: "dispatch@transglologistics.com",
             recipient_name: "Robert Vance & Partners",
             recipient_email: "r.vance@vanceglobal.com",
             recipient_address: "350 Fifth Avenue, Suite 4200, New York, NY 10118",
@@ -60,7 +60,7 @@ export default function TrackingSearch() {
                     shipment_id: uppercaseCode,
                     status: "In Delivery",
                     location: "JFK International Freight Terminal",
-                    description: "Package arrived at regional sorting hub. Assigned to SwiftLink Express Air Network.",
+                    description: "Package arrived at regional sorting hub. Assigned to Transglologistics Express Air Network.",
                     created_at: new Date(Date.now() - 3600000 * 3).toISOString()
                 },
                 {
@@ -76,7 +76,7 @@ export default function TrackingSearch() {
                     shipment_id: uppercaseCode,
                     status: "Dispatch Processed",
                     location: "Frankfurt Gateway",
-                    description: "Package logged into SwiftLink satellite tracking system.",
+                    description: "Package logged into Transglologistics satellite tracking system.",
                     created_at: new Date(Date.now() - 3600000 * 48).toISOString()
                 }
             ]
@@ -118,7 +118,7 @@ export default function TrackingSearch() {
         // 2. Try LocalStorage
         if (!found && typeof window !== "undefined") {
             try {
-                const saved = localStorage.getItem("swiftlink_shipments") || localStorage.getItem("vortex_shipments");
+                const saved = localStorage.getItem("transglologistics_shipments") || localStorage.getItem("transglologistics_shipments");
                 if (saved) {
                     const localShipments: Shipment[] = JSON.parse(saved);
                     const match = localShipments.find(s =>
@@ -138,11 +138,11 @@ export default function TrackingSearch() {
             found = generateSimulatedShipment(cleanQuery);
             if (typeof window !== "undefined") {
                 try {
-                    const saved = localStorage.getItem("swiftlink_shipments");
+                    const saved = localStorage.getItem("transglologistics_shipments");
                     const localShipments: Shipment[] = saved ? JSON.parse(saved) : [];
                     if (!localShipments.some(s => s.tracking_number.toLowerCase() === cleanQuery.toLowerCase())) {
                         localShipments.push(found);
-                        localStorage.setItem("swiftlink_shipments", JSON.stringify(localShipments));
+                        localStorage.setItem("transglologistics_shipments", JSON.stringify(localShipments));
                     }
                 } catch (e) {
                     // quota ignore
@@ -245,7 +245,7 @@ export default function TrackingSearch() {
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.9)]" />
-                                    <p className="text-blue-400 text-xs font-mono font-bold uppercase tracking-widest">SWIFTLINK LOGISTICS LIVE</p>
+                                    <p className="text-blue-400 text-xs font-mono font-bold uppercase tracking-widest">TRANSGLOLOGISTICS LOGISTICS LIVE</p>
                                 </div>
                                 <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                                     {result.current_status || "IN TRANSIT"}
@@ -287,7 +287,7 @@ export default function TrackingSearch() {
                                         </div>
                                         <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600">
                                             <Truck size={14} className="animate-pulse" />
-                                            En Route via SwiftLink Transit Network
+                                            En Route via Transglologistics Transit Network
                                         </div>
                                     </div>
 
@@ -338,7 +338,7 @@ export default function TrackingSearch() {
                                             <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative">
                                                 <div className="absolute top-4 left-4 z-[400] bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-xl text-white flex items-center gap-3">
                                                     <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">SWIFTLINK LIVE SATELLITE GPS</span>
+                                                    <span className="text-xs font-bold uppercase tracking-wider">TRANSGLOLOGISTICS LIVE SATELLITE GPS</span>
                                                 </div>
                                                 <LiveMap
                                                     lat={result.latitude}

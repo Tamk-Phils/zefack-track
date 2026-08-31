@@ -13,7 +13,7 @@ export default function TrackingPage() {
                 <div className="absolute inset-0 z-0">
                     <Image
                         src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
-                        alt="SwiftLink Satellite Tracking"
+                        alt="Transglologistics Satellite Tracking"
                         fill
                         priority
                         className="object-cover object-center opacity-20"
@@ -24,7 +24,7 @@ export default function TrackingPage() {
                 <div className="max-w-7xl mx-auto px-6 relative z-10 text-center space-y-4">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600/90 text-white font-bold text-xs uppercase tracking-wider shadow-md">
                         <Radar size={14} className="text-white animate-pulse" />
-                        SWIFTLINK LIVE SATELLITE RADAR
+                        TRANSGLOLOGISTICS LIVE SATELLITE RADAR
                     </div>
                     <h1 className="text-4xl md:text-6xl font-black tracking-tight">Real Time Parcel Tracking</h1>
                     <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto font-medium">

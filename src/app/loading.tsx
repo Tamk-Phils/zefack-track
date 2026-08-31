@@ -9,7 +9,7 @@ export default function Loading() {
           <Navigation size={24} className="text-blue-600 absolute transform rotate-45" />
         </div>
         <div>
-          <h3 className="font-black text-slate-900 text-lg tracking-tight">SwiftLink Logistics</h3>
+          <h3 className="font-black text-slate-900 text-lg tracking-tight">Transglologistics Logistics</h3>
           <p className="text-xs text-slate-500 font-medium mt-1">Connecting to Satellite Network...</p>
         </div>
       </div>

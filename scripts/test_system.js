@@ -1,5 +1,5 @@
 /**
- * System Verification & Diagnostic Script for Vortex Shipping Platform
+ * System Verification & Diagnostic Script for Transglologistics Platform
  * Run with: node scripts/test_system.js
  */
 
@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 console.log("==================================================");
-console.log("🧪 VORTEX SHIPPING PLATFORM - SYSTEM INTEGRITY TEST");
+console.log("🧪 TRANSGLOLOGISTICS PLATFORM - SYSTEM INTEGRITY TEST");
 console.log("==================================================\n");
 
 let passed = 0;

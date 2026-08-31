@@ -54,7 +54,7 @@ export default function ChatWidget() {
                         id: 'welcome',
                         room_id: userRoomId,
                         sender_name: 'System',
-                        content: `Hello ${currentSession.user.user_metadata.full_name || 'there'}! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?`,
+                        content: `Hello ${currentSession.user.user_metadata.full_name || 'there'}! Welcome to Transglologistics Logistics Support. How can we help with your cargo or parcel today?`,
                         sender_role: 'system',
                         created_at: new Date().toISOString()
                     }]);
@@ -199,7 +199,7 @@ export default function ChatWidget() {
                     id: crypto.randomUUID(),
                     room_id: roomId,
                     sender_name: "System",
-                    content: "Thank you for reaching out! A SwiftLink dispatch agent has been notified and will join the chat momentarily.",
+                    content: "Thank you for reaching out! A Transglologistics dispatch agent has been notified and will join the chat momentarily.",
                     sender_role: "system",
                     created_at: new Date().toISOString()
                 };
@@ -232,7 +232,7 @@ export default function ChatWidget() {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h4 className="font-extrabold text-sm tracking-tight">SwiftLink Support</h4>
+                                        <h4 className="font-extrabold text-sm tracking-tight">Transglologistics Support</h4>
                                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                                     </div>
                                     <p className="text-[11px] text-slate-300 font-medium">Online 24/7 Global Dispatch Desk</p>
