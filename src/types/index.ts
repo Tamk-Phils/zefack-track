@@ -54,7 +54,8 @@ export interface ChatRoom {
 export interface ChatMessage {
     id: string;
     room_id: string;
-    sender_role: 'admin' | 'customer';
+    sender_name?: string;
+    sender_role: 'admin' | 'user' | 'system';
     content: string;
     created_at: string;
 }

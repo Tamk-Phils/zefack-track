@@ -50,7 +50,11 @@ export default function AdminChat() {
                         filter: `room_id=eq.${selectedRoomId}`
                     },
                     (payload) => {
-                        setMessages(prev => [...prev, payload.new as ChatMessage]);
+                        const newMsg = payload.new as ChatMessage;
+                        setMessages(prev => {
+                            if (prev.find(m => m.id === newMsg.id)) return prev;
+                            return [...prev, newMsg];
+                        });
                     }
                 )
                 .subscribe();
@@ -101,9 +105,21 @@ export default function AdminChat() {
         const content = inputValue.trim();
         setInputValue("");
 
+        const newId = crypto.randomUUID();
+        const adminMsg: ChatMessage = {
+            id: newId,
+            room_id: selectedRoomId,
+            sender_name: "Admin",
+            content,
+            sender_role: "admin",
+            created_at: new Date().toISOString()
+        };
+
+        setMessages(prev => [...prev, adminMsg]);
+
         const { error } = await supabase
             .from('chat_messages')
-            .insert([{ room_id: selectedRoomId, content, sender_role: 'admin' }]);
+            .insert([{ id: newId, room_id: selectedRoomId, content, sender_role: 'admin' }]);
 
         if (!error) {
             await supabase
