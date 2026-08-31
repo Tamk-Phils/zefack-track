@@ -45,10 +45,10 @@ export default function SignupPage() {
 
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-6 sm:p-10 bg-slate-50 relative overflow-hidden">
-            {/* Baclbsround elements */}
+            {/* Background elements - Performance Optimized */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 blur-[120px] rounded-full" />
-                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-accent/5 blur-[120px] rounded-full" />
+                <div className="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] rounded-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-200/30 via-transparent to-transparent opacity-60" />
+                <div className="absolute -bottom-[20%] -left-[10%] w-[70%] h-[70%] rounded-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-200/30 via-transparent to-transparent opacity-60" />
             </div>
 
             <motion.div

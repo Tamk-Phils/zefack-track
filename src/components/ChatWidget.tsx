@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Headset, Loader2, ArrowRight } from "lucide-react";
+import { MessageCircle, X, Send, Headset, Loader2, ArrowRight, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { Session } from "@supabase/supabase-js";
 
 interface ChatMessage {
     id: string;
@@ -22,45 +23,79 @@ export default function ChatWidget() {
     const [isTyping, setIsTyping] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [roomId, setRoomId] = useState<string | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
+    const [isLoadingSession, setIsLoadingSession] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Initialize session and load messages
     useEffect(() => {
-        let storedRoomId = localStorage.getItem('swiftlink_chat_room_id');
-        
-        const initChat = async () => {
-            if (!storedRoomId) return; // Wait for user to send first message
-            
-            setRoomId(storedRoomId);
-            
-            // Load existing messages
-            const { data } = await supabase
-                .from('chat_messages')
-                .select('*')
-                .eq('room_id', storedRoomId)
-                .order('created_at', { ascending: true });
+        const initSession = async () => {
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            setSession(currentSession);
+            setIsLoadingSession(false);
+
+            if (currentSession) {
+                // Determine room ID based on user ID so they always have the same room
+                const userRoomId = currentSession.user.id;
+                setRoomId(userRoomId);
                 
-            if (data && data.length > 0) {
-                setMessages(data);
+                // Load existing messages
+                const { data } = await supabase
+                    .from('chat_messages')
+                    .select('*')
+                    .eq('room_id', userRoomId)
+                    .order('created_at', { ascending: true });
+                    
+                if (data && data.length > 0) {
+                    setMessages(data);
+                } else {
+                    // Welcome message for authenticated users
+                    setMessages([{
+                        id: 'welcome',
+                        room_id: userRoomId,
+                        sender_name: 'System',
+                        content: `Hello ${currentSession.user.user_metadata.full_name || 'there'}! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?`,
+                        sender_role: 'system',
+                        created_at: new Date().toISOString()
+                    }]);
+                }
             } else {
-                // If room exists but no messages loaded yet, add welcome message
+                // Welcome message for unauthenticated users
                 setMessages([{
-                    id: 'welcome',
-                    room_id: storedRoomId,
+                    id: 'welcome-unauth',
+                    room_id: 'temp',
                     sender_name: 'System',
-                    content: 'Hello! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?',
+                    content: 'Hello! To ensure security and dedicated support, please sign in to establish a live uplink with our dispatch agents.',
                     sender_role: 'system',
                     created_at: new Date().toISOString()
                 }]);
             }
         };
 
-        initChat();
+        initSession();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            if (!session) {
+                setMessages([{
+                    id: 'welcome-unauth',
+                    room_id: 'temp',
+                    sender_name: 'System',
+                    content: 'Hello! To ensure security and dedicated support, please sign in to establish a live uplink with our dispatch agents.',
+                    sender_role: 'system',
+                    created_at: new Date().toISOString()
+                }]);
+                setRoomId(null);
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     // Subscribe to real-time messages
     useEffect(() => {
-        if (!roomId) return;
+        if (!roomId || !session) return;
 
         const channel = supabase
             .channel(`chat-room-${roomId}`)
@@ -91,7 +126,7 @@ export default function ChatWidget() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [roomId, isOpen]);
+    }, [roomId, session, isOpen]);
 
     // Auto-scroll to latest message
     useEffect(() => {
@@ -103,40 +138,33 @@ export default function ChatWidget() {
     const handleOpen = () => {
         setIsOpen(true);
         setUnreadCount(0);
-        
-        // If no room exists, initialize welcome message locally
-        if (!roomId && messages.length === 0) {
-            setMessages([{
-                id: 'welcome',
-                room_id: 'temp',
-                sender_name: 'System',
-                content: 'Hello! Welcome to SwiftLink Logistics Support. How can we help with your cargo or parcel today?',
-                sender_role: 'system',
-                created_at: new Date().toISOString()
-            }]);
-        }
     };
 
     const handleQuickAction = (promptText: string) => {
-        submitUserMessage(promptText);
+        if (session) {
+            submitUserMessage(promptText);
+        }
     };
 
     const submitUserMessage = async (text: string) => {
-        if (!text.trim()) return;
+        if (!text.trim() || !session || !roomId) return;
 
-        let activeRoomId = roomId;
+        const fullName = session.user.user_metadata.full_name || 'Verified User';
+        const email = session.user.email || 'unknown@email.com';
 
-        // Create room if it doesn't exist
-        if (!activeRoomId) {
-            const newRoomId = crypto.randomUUID();
-            activeRoomId = newRoomId;
-            setRoomId(newRoomId);
-            localStorage.setItem('swiftlink_chat_room_id', newRoomId);
+        // Check if room exists by attempting to create/update it
+        const { data: existingRoom } = await supabase
+            .from('chat_rooms')
+            .select('id')
+            .eq('id', roomId)
+            .single();
 
-            // Insert new room
+        if (!existingRoom) {
+            // Insert new room using user's real identity
             await supabase.from('chat_rooms').insert([{
-                id: newRoomId,
-                customer_name: `Visitor-${newRoomId.substring(0, 5)}`,
+                id: roomId,
+                customer_name: fullName,
+                customer_email: email,
                 last_message: text
             }]);
         } else {
@@ -144,13 +172,13 @@ export default function ChatWidget() {
             await supabase.from('chat_rooms').update({
                 last_message: text,
                 updated_at: new Date().toISOString()
-            }).eq('id', activeRoomId);
+            }).eq('id', roomId);
         }
 
         const userMsg: ChatMessage = {
             id: crypto.randomUUID(),
-            room_id: activeRoomId,
-            sender_name: "Visitor",
+            room_id: roomId,
+            sender_name: fullName,
             content: text,
             sender_role: "user",
             created_at: new Date().toISOString()
@@ -165,11 +193,11 @@ export default function ChatWidget() {
         await supabase.from('chat_messages').insert([userMsg]);
         
         // If it's the very first message, simulate an automated acknowledgment while waiting for admin
-        if (messages.length <= 1) {
+        if (messages.length <= 2) { // Allow for welcome message
             setTimeout(async () => {
                 const autoReply: ChatMessage = {
                     id: crypto.randomUUID(),
-                    room_id: activeRoomId!,
+                    room_id: roomId,
                     sender_name: "System",
                     content: "Thank you for reaching out! A SwiftLink dispatch agent has been notified and will join the chat momentarily.",
                     sender_role: "system",
@@ -218,59 +246,61 @@ export default function ChatWidget() {
                             </button>
                         </div>
 
-                        {/* Quick Prompts Bar */}
-                        <div className="bg-slate-100/80 px-4 py-2 border-b border-slate-200/80 flex items-center gap-2 overflow-x-auto text-[11px] font-bold text-slate-700 no-scrollbar">
-                            <span className="text-slate-400 shrink-0 font-extrabold uppercase tracking-wider text-[9px]">Quick:</span>
-                            <button
-                                onClick={() => handleQuickAction("Track my consignment")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
-                            >
-                                📦 Track Consignment
-                            </button>
-                            <button
-                                onClick={() => handleQuickAction("Get a freight quote")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
-                            >
-                                💰 Request Quote
-                            </button>
-                            <button
-                                onClick={() => handleQuickAction("Speak to support agent")}
-                                className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
-                            >
-                                🎧 Live Support
-                            </button>
-                        </div>
+                        {/* Quick Prompts Bar (Only show if authenticated) */}
+                        {session && (
+                            <div className="bg-slate-100/80 px-4 py-2 border-b border-slate-200/80 flex items-center gap-2 overflow-x-auto text-[11px] font-bold text-slate-700 no-scrollbar">
+                                <span className="text-slate-400 shrink-0 font-extrabold uppercase tracking-wider text-[9px]">Quick:</span>
+                                <button
+                                    onClick={() => handleQuickAction("Track my consignment")}
+                                    className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
+                                >
+                                    📦 Track Consignment
+                                </button>
+                                <button
+                                    onClick={() => handleQuickAction("Get a freight quote")}
+                                    className="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-slate-200/80 hover:border-blue-200 whitespace-nowrap transition-colors shadow-sm"
+                                >
+                                    💰 Request Quote
+                                </button>
+                            </div>
+                        )}
 
                         {/* Messages Area */}
                         <div
                             ref={scrollRef}
                             className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50"
                         >
-                            {messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex flex-col ${msg.sender_role === 'user' ? 'items-end' : 'items-start'}`}
-                                >
-                                    <div
-                                        className={`max-w-[85%] p-3.5 rounded-2xl text-xs font-semibold leading-relaxed shadow-sm ${msg.sender_role === 'user'
-                                            ? 'bg-blue-600 text-white rounded-br-none'
-                                            : msg.sender_role === 'admin'
-                                                ? 'bg-slate-900 text-white rounded-bl-none' 
-                                                : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-none'
-                                            }`}
-                                    >
-                                        <p>{msg.content}</p>
-                                    </div>
-                                    <div className="flex items-center gap-1 mt-1 px-1">
-                                        <span className="text-[9px] font-bold text-slate-400">
-                                            {msg.sender_role === 'admin' ? 'Agent' : msg.sender_name}
-                                        </span>
-                                        <span className="text-[9px] text-slate-400 font-medium">
-                                            • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
+                            {isLoadingSession ? (
+                                <div className="h-full flex items-center justify-center">
+                                    <Loader2 className="animate-spin text-blue-600" size={24} />
                                 </div>
-                            ))}
+                            ) : (
+                                messages.map((msg) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex flex-col ${msg.sender_role === 'user' ? 'items-end' : 'items-start'}`}
+                                    >
+                                        <div
+                                            className={`max-w-[85%] p-3.5 rounded-2xl text-xs font-semibold leading-relaxed shadow-sm ${msg.sender_role === 'user'
+                                                ? 'bg-blue-600 text-white rounded-br-none'
+                                                : msg.sender_role === 'admin'
+                                                    ? 'bg-slate-900 text-white rounded-bl-none'
+                                                    : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-none'
+                                                }`}
+                                        >
+                                            <p>{msg.content}</p>
+                                        </div>
+                                        <div className="flex items-center gap-1 mt-1 px-1">
+                                            <span className="text-[9px] font-bold text-slate-400">
+                                                {msg.sender_role === 'admin' ? 'Agent' : msg.sender_name}
+                                            </span>
+                                            <span className="text-[9px] text-slate-400 font-medium">
+                                                • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
 
                             {isTyping && (
                                 <div className="flex items-center gap-2 text-slate-400 text-xs font-semibold p-2 bg-white rounded-2xl border border-slate-200/60 w-fit">
@@ -280,25 +310,40 @@ export default function ChatWidget() {
                             )}
                         </div>
 
-                        {/* Input Footer */}
-                        <form
-                            onSubmit={handleSubmit}
-                            className="p-3 border-t border-slate-200 bg-white flex items-center gap-2"
-                        >
-                            <input
-                                type="text"
-                                placeholder="Type your message..."
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
-                            />
-                            <button
-                                type="submit"
-                                className="w-10 h-10 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl flex items-center justify-center transition-all shadow-md shrink-0 cursor-pointer"
-                            >
-                                <Send size={16} />
-                            </button>
-                        </form>
+                        {/* Input Footer (Conditional on Authentication) */}
+                        {!isLoadingSession && (
+                            session ? (
+                                <form
+                                    onSubmit={handleSubmit}
+                                    className="p-3 border-t border-slate-200 bg-white flex items-center gap-2"
+                                >
+                                    <input
+                                        type="text"
+                                        placeholder="Type your message..."
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600 transition-colors"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="w-10 h-10 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl flex items-center justify-center transition-all shadow-md shrink-0 cursor-pointer"
+                                    >
+                                        <Send size={16} />
+                                    </button>
+                                </form>
+                            ) : (
+                                <div className="p-4 border-t border-slate-200 bg-white flex justify-center">
+                                    <Link 
+                                        href="/login"
+                                        onClick={() => setIsOpen(false)}
+                                        className="w-full bg-slate-900 hover:bg-blue-600 text-white rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-extrabold tracking-widest uppercase transition-colors shadow-lg"
+                                    >
+                                        <Lock size={14} />
+                                        Secure Sign In
+                                    </Link>
+                                </div>
+                            )
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>
