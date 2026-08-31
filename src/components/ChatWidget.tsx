@@ -29,8 +29,8 @@ export default function ChatWidget() {
 
     // Initialize session and load messages
     useEffect(() => {
-        const initSession = async () => {
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
             setSession(currentSession);
             setIsLoadingSession(false);
 
@@ -61,23 +61,6 @@ export default function ChatWidget() {
                 }
             } else {
                 // Welcome message for unauthenticated users
-                setMessages([{
-                    id: 'welcome-unauth',
-                    room_id: 'temp',
-                    sender_name: 'System',
-                    content: 'Hello! To ensure security and dedicated support, please sign in to establish a live uplink with our dispatch agents.',
-                    sender_role: 'system',
-                    created_at: new Date().toISOString()
-                }]);
-            }
-        };
-
-        initSession();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            if (!session) {
                 setMessages([{
                     id: 'welcome-unauth',
                     room_id: 'temp',
