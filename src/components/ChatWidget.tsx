@@ -47,7 +47,14 @@ export default function ChatWidget() {
                     .order('created_at', { ascending: true });
                     
                 if (data && data.length > 0) {
-                    setMessages(data);
+                    setMessages(data.map((d: any) => ({
+                        id: d.id,
+                        room_id: d.room_id,
+                        sender_name: d.sender_name,
+                        content: d.message,
+                        sender_role: d.is_admin ? 'admin' : 'user',
+                        created_at: d.created_at
+                    })));
                 } else {
                     // Welcome message for authenticated users
                     setMessages([{
@@ -91,7 +98,15 @@ export default function ChatWidget() {
                     filter: `room_id=eq.${roomId}`
                 },
                 (payload) => {
-                    const newMsg = payload.new as ChatMessage;
+                    const d = payload.new as any;
+                    const newMsg: ChatMessage = {
+                        id: d.id,
+                        room_id: d.room_id,
+                        sender_name: d.sender_name,
+                        content: d.message,
+                        sender_role: d.is_admin ? 'admin' : 'user',
+                        created_at: d.created_at
+                    };
                     setMessages(prev => {
                         // Prevent duplicates
                         if (prev.find(m => m.id === newMsg.id)) return prev;
@@ -180,7 +195,13 @@ export default function ChatWidget() {
         setIsTyping(true);
 
         // Send to Supabase
-        await supabase.from('chat_messages').insert([userMsg]);
+        await supabase.from('chat_messages').insert([{
+            id: userMsg.id,
+            room_id: userMsg.room_id,
+            sender_name: userMsg.sender_name,
+            message: userMsg.content,
+            is_admin: false
+        }]);
         
         // If it's the very first message, simulate an automated acknowledgment while waiting for admin
         if (messages.length <= 2) { // Allow for welcome message
@@ -193,7 +214,13 @@ export default function ChatWidget() {
                     sender_role: "system",
                     created_at: new Date().toISOString()
                 };
-                await supabase.from('chat_messages').insert([autoReply]);
+                await supabase.from('chat_messages').insert([{
+                    id: autoReply.id,
+                    room_id: autoReply.room_id,
+                    sender_name: autoReply.sender_name,
+                    message: autoReply.content,
+                    is_admin: true
+                }]);
                 setIsTyping(false);
             }, 1500);
         }

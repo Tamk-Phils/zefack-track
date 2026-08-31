@@ -52,7 +52,15 @@ export default function AdminChat() {
                         filter: `room_id=eq.${selectedRoomId}`
                     },
                     (payload) => {
-                        const newMsg = payload.new as ChatMessage;
+                        const d = payload.new as any;
+                        const newMsg: ChatMessage = {
+                            id: d.id,
+                            room_id: d.room_id,
+                            sender_name: d.sender_name,
+                            content: d.message,
+                            sender_role: d.is_admin ? 'admin' : 'user',
+                            created_at: d.created_at
+                        };
                         setMessages(prev => {
                             if (prev.find(m => m.id === newMsg.id)) return prev;
                             return [...prev, newMsg];
@@ -98,7 +106,14 @@ export default function AdminChat() {
             .order('created_at', { ascending: true });
 
         if (!error && data) {
-            setMessages(data);
+            setMessages(data.map((d: any) => ({
+                id: d.id,
+                room_id: d.room_id,
+                sender_name: d.sender_name,
+                content: d.message,
+                sender_role: d.is_admin ? 'admin' : 'user',
+                created_at: d.created_at
+            })));
         }
         setIsLoadingMessages(false);
     };
@@ -132,7 +147,7 @@ export default function AdminChat() {
 
         const { error } = await supabase
             .from('chat_messages')
-            .insert([{ id: newId, room_id: selectedRoomId, sender_name: 'Admin', content, sender_role: 'admin' }]);
+            .insert([{ id: newId, room_id: selectedRoomId, sender_name: 'Admin', message: content, is_admin: true }]);
 
         if (!error) {
             await supabase
