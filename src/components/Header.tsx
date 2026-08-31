@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Menu, X, Navigation, Globe, ChevronDown, ChevronRight, User, Mail, Phone, Clock, Facebook, Twitter, Youtube, Linkedin, ArrowRight, Search, ShieldCheck } from "lucide-react";
+import { Menu, X, Navigation, Globe, ChevronDown, ChevronRight, User, Mail, Phone, Clock, ArrowRight, Search, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -87,12 +87,6 @@ export default function Header() {
                     </div>
 
                     <div className="flex items-center gap-5">
-                        <div className="flex items-center gap-3 pr-4 border-r border-slate-700">
-                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="Facebook"><Facebook size={13} /></a>
-                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="Twitter"><Twitter size={13} /></a>
-                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="YouTube"><Youtube size={13} /></a>
-                            <a href="#" className="hover:text-blue-400 transition-colors" aria-label="LinkedIn"><Linkedin size={13} /></a>
-                        </div>
                         <Link href="/resources" className="hover:text-blue-400 transition-colors font-medium">Our FAQs</Link>
                         <Link href="/quote" className="hover:text-blue-400 transition-colors font-semibold text-blue-400">Get a Quote</Link>
                     </div>

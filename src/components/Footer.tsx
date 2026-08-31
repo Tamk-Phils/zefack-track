@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, ArrowRight, Navigation, ShieldCheck, Phone, MapPin, Facebook, Twitter, Youtube, Instagram, Linkedin } from "lucide-react";
+import { Mail, ArrowRight, Navigation, ShieldCheck, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -88,13 +88,6 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        <div className="flex gap-2.5 pt-2">
-                            {[Facebook, Twitter, Youtube, Linkedin, Instagram].map((Icon, i) => (
-                                <a key={i} href="#" className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
-                                    <Icon size={15} />
-                                </a>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Company Column */}
