@@ -78,7 +78,7 @@ export default function Header() {
                         </a>
                         <div className="flex items-center gap-2">
                             <Phone size={14} className="text-blue-400" />
-                            <span>+1 (800) 555-SWIFT</span>
+                            <span>+1 254-966-4186</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-400">
                             <Clock size={14} className="text-blue-400" />

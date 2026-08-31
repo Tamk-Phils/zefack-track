@@ -47,7 +47,7 @@ export default function ContactPage() {
                         <span className="text-xs font-black uppercase tracking-wider text-slate-400">HOTLINE</span>
                         <h3 className="text-xl font-black text-slate-900">Phone Support</h3>
                         <p className="text-blue-600 font-extrabold text-sm">
-                            +1 (800) 555-SWIFT
+                            +1 254-966-4186
                         </p>
                     </div>
 

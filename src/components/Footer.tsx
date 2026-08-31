@@ -84,7 +84,7 @@ export default function Footer() {
                             </div>
                             <div className="flex items-center gap-3 text-slate-400">
                                 <Phone size={14} className="text-blue-400 shrink-0" />
-                                <span>+1 (800) 555-SWIFT</span>
+                                <span>+1 254-966-4186</span>
                             </div>
                         </div>
 
