@@ -33,6 +33,8 @@ export default function AdminChat() {
         };
     }, []);
 
+    const [activeChannel, setActiveChannel] = useState<any>(null);
+
     // Load messages when room selection changes
     useEffect(() => {
         if (selectedRoomId) {
@@ -40,7 +42,7 @@ export default function AdminChat() {
 
             // Subscribe to room messages
             const channel = supabase
-                .channel(`admin-room-${selectedRoomId}`)
+                .channel(`room-${selectedRoomId}`, { config: { broadcast: { ack: false } } })
                 .on(
                     'postgres_changes',
                     {
@@ -59,8 +61,11 @@ export default function AdminChat() {
                 )
                 .subscribe();
 
+            setActiveChannel(channel);
+
             return () => {
                 supabase.removeChannel(channel);
+                setActiveChannel(null);
             };
         }
     }, [selectedRoomId]);
@@ -104,6 +109,14 @@ export default function AdminChat() {
 
         const content = inputValue.trim();
         setInputValue("");
+        
+        if (activeChannel) {
+            activeChannel.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: { isTyping: false }
+            });
+        }
 
         const newId = crypto.randomUUID();
         const adminMsg: ChatMessage = {
@@ -119,13 +132,24 @@ export default function AdminChat() {
 
         const { error } = await supabase
             .from('chat_messages')
-            .insert([{ id: newId, room_id: selectedRoomId, content, sender_role: 'admin' }]);
+            .insert([{ id: newId, room_id: selectedRoomId, sender_name: 'Admin', content, sender_role: 'admin' }]);
 
         if (!error) {
             await supabase
                 .from('chat_rooms')
                 .update({ last_message: content, updated_at: new Date().toISOString() })
                 .eq('id', selectedRoomId);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        if (activeChannel) {
+            activeChannel.send({
+                type: 'broadcast',
+                event: 'typing',
+                payload: { isTyping: e.target.value.length > 0 }
+            });
         }
     };
 
@@ -288,7 +312,7 @@ export default function AdminChat() {
                                 placeholder="TYPE UPLINK RESPONSE..."
                                 className="flex-1 bg-slate-50 border border-slate-200 rounded-sm py-5 px-8 text-[10px] font-black uppercase tracking-widest text-slate-900 focus:outline-none focus:border-primary transition-all outline-none"
                                 value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
+                                onChange={handleInputChange}
                             />
                             <button
                                 type="submit"

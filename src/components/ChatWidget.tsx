@@ -81,7 +81,7 @@ export default function ChatWidget() {
         if (!roomId || !session) return;
 
         const channel = supabase
-            .channel(`chat-room-${roomId}`)
+            .channel(`room-${roomId}`)
             .on(
                 'postgres_changes',
                 {
@@ -102,6 +102,13 @@ export default function ChatWidget() {
                         setUnreadCount(prev => prev + 1);
                     }
                     setIsTyping(false);
+                }
+            )
+            .on(
+                'broadcast',
+                { event: 'typing' },
+                (payload) => {
+                    setIsTyping(payload.payload.isTyping);
                 }
             )
             .subscribe();
