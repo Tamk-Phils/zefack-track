@@ -168,8 +168,8 @@ export default function TrackingSearch() {
         <div className="w-full">
             {/* Search Input Box - Matching Uploaded Reference Image */}
             <form onSubmit={handleSearchSubmit} className="relative">
-                <div className="flex flex-col sm:flex-row items-center gap-3 p-2 md:p-3 bg-white rounded-2xl md:rounded-full shadow-2xl border border-slate-100 transition-all duration-300">
-                    <div className="relative flex-grow w-full flex items-center pl-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                    <div className="relative flex-grow w-full flex items-center px-4 bg-slate-50 border-2 border-slate-300 rounded-lg focus-within:border-blue-600 focus-within:bg-white transition-all">
                         <Package size={24} className="text-blue-600 shrink-0 mr-3" />
                         <input
                             type="text"
@@ -178,8 +178,8 @@ export default function TrackingSearch() {
                                 setTrackingNumber(e.target.value);
                                 if (error) setError(null);
                             }}
-                            placeholder="Enter Tracking Number"
-                            className="w-full bg-transparent py-3 md:py-4 pr-4 text-slate-800 text-base md:text-lg font-bold uppercase tracking-wider focus:outline-none placeholder:text-slate-400 placeholder:normal-case placeholder:font-normal"
+                            placeholder="Enter Tracking Number (e.g. VTX948210394)"
+                            className="w-full bg-transparent py-4 text-slate-900 text-base md:text-lg font-bold uppercase tracking-wider focus:outline-none placeholder:text-slate-400 placeholder:normal-case placeholder:font-normal"
                         />
                     </div>
 

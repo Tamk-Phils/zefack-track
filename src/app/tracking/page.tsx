@@ -12,7 +12,7 @@ export default function TrackingPage() {
             <section className="bg-slate-900 text-white py-16 mb-16 relative overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2000"
+                        src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2000"
                         alt="Transglologistics Satellite Tracking"
                         fill
                         priority
