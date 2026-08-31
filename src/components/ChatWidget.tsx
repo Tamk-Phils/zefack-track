@@ -25,6 +25,7 @@ export default function ChatWidget() {
     const [roomId, setRoomId] = useState<string | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [isLoadingSession, setIsLoadingSession] = useState(true);
+    const [activeChannel, setActiveChannel] = useState<any>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Initialize session and load messages
@@ -126,10 +127,29 @@ export default function ChatWidget() {
                     setIsTyping(payload.payload.isTyping);
                 }
             )
+            .on(
+                'broadcast',
+                { event: 'new_message' },
+                (payload) => {
+                    const newMsg = payload.payload as ChatMessage;
+                    setMessages(prev => {
+                        if (prev.find(m => m.id === newMsg.id)) return prev;
+                        return [...prev, newMsg];
+                    });
+                    
+                    if (!isOpen && newMsg.sender_role === 'admin') {
+                        setUnreadCount(prev => prev + 1);
+                    }
+                    setIsTyping(false);
+                }
+            )
             .subscribe();
+
+        setActiveChannel(channel);
 
         return () => {
             supabase.removeChannel(channel);
+            setActiveChannel(null);
         };
     }, [roomId, session, isOpen]);
 
@@ -193,6 +213,14 @@ export default function ChatWidget() {
         setMessages((prev) => [...prev, userMsg]);
         setInputValue("");
         setIsTyping(true);
+
+        if (activeChannel) {
+            activeChannel.send({
+                type: 'broadcast',
+                event: 'new_message',
+                payload: userMsg
+            });
+        }
 
         // Send to Supabase
         await supabase.from('chat_messages').insert([{

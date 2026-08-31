@@ -67,6 +67,17 @@ export default function AdminChat() {
                         });
                     }
                 )
+                .on(
+                    'broadcast',
+                    { event: 'new_message' },
+                    (payload) => {
+                        const newMsg = payload.payload as ChatMessage;
+                        setMessages(prev => {
+                            if (prev.find(m => m.id === newMsg.id)) return prev;
+                            return [...prev, newMsg];
+                        });
+                    }
+                )
                 .subscribe();
 
             setActiveChannel(channel);
@@ -144,6 +155,14 @@ export default function AdminChat() {
         };
 
         setMessages(prev => [...prev, adminMsg]);
+
+        if (activeChannel) {
+            activeChannel.send({
+                type: 'broadcast',
+                event: 'new_message',
+                payload: adminMsg
+            });
+        }
 
         const { error } = await supabase
             .from('chat_messages')
