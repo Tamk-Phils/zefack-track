@@ -521,6 +521,19 @@ export default function AddShipment() {
                                         </select>
                                     </div>
                                     <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Payment Status</label>
+                                        <select
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 focus:border-primary font-bold text-xs text-slate-900 outline-none appearance-none cursor-pointer"
+                                            value={formData.payment_status}
+                                            onChange={(e) => setFormData({ ...formData, payment_status: e.target.value })}
+                                        >
+                                            <option value="Paid">Paid (Verified)</option>
+                                            <option value="Pending">Pending Payment</option>
+                                            <option value="Partially Paid">Partially Paid</option>
+                                            <option value="Unpaid">Unpaid / Payment Due</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-1">
                                         <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Initial Status</label>
                                         <select
                                             className="w-full bg-slate-900 text-white border-none rounded-xl py-3.5 px-4 focus:bg-primary font-bold text-xs outline-none cursor-pointer"

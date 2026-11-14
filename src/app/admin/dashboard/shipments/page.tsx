@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Plus, Filter, Edit2, Trash2, ArrowUpRight, Package, RefreshCw, X, Save, MapPin, Clock, Copy, Check, Radar, Activity, Zap, Loader2 } from "lucide-react";
+import { Search, Plus, Filter, Edit2, Trash2, ArrowUpRight, Package, RefreshCw, X, Save, MapPin, Clock, Copy, Check, Radar, Activity, Zap, Loader2, CreditCard } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -24,6 +24,7 @@ export default function ShipmentsList() {
     const [editingShipment, setEditingShipment] = useState<Shipment | null>(null);
     const [newUpdate, setNewUpdate] = useState({
         status: "Pending",
+        payment_status: "Paid",
         location: "",
         description: "",
         lat: 32.7767,
@@ -149,6 +150,7 @@ export default function ShipmentsList() {
         setEditingShipment(shipment);
         setNewUpdate({
             status: shipment.current_status || "Pending",
+            payment_status: shipment.payment_status || "Paid",
             location: shipment.updates?.[0]?.location || shipment.origin || "",
             description: "",
             lat: shipment.latitude || shipment.origin_lat || 32.7767,
@@ -176,6 +178,7 @@ export default function ShipmentsList() {
         const updatedShipmentData: Shipment = {
             ...editingShipment,
             current_status: newUpdate.status as any,
+            payment_status: newUpdate.payment_status,
             latitude: newUpdate.lat,
             longitude: newUpdate.lng,
             updates: updatedUpdates,
@@ -209,6 +212,7 @@ export default function ShipmentsList() {
                         .from('shipments')
                         .update({
                             current_status: newUpdate.status,
+                            payment_status: newUpdate.payment_status,
                             updates: updatedUpdates,
                             latitude: newUpdate.lat,
                             longitude: newUpdate.lng,
@@ -382,13 +386,26 @@ export default function ShipmentsList() {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-5">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border inline-block ${shipment.current_status === 'Delivered' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                                                        shipment.current_status === 'Held' ? 'bg-red-50 border-red-200 text-red-700' :
-                                                            shipment.current_status === 'Pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                                                                'bg-blue-50 border-blue-200 text-blue-700'
+                                                    <div className="flex flex-col gap-1.5 items-start">
+                                                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border inline-block ${shipment.current_status === 'Delivered' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                                                            shipment.current_status === 'Held' ? 'bg-red-50 border-red-200 text-red-700' :
+                                                                shipment.current_status === 'Pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                                                                    'bg-blue-50 border-blue-200 text-blue-700'
+                                                            }`}>
+                                                            {shipment.current_status}
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border ${
+                                                            shipment.payment_status?.toLowerCase() === 'pending'
+                                                                ? 'bg-amber-50 border-amber-200 text-amber-800'
+                                                                : shipment.payment_status?.toLowerCase().includes('part')
+                                                                ? 'bg-blue-50 border-blue-200 text-blue-800'
+                                                                : shipment.payment_status?.toLowerCase() === 'unpaid'
+                                                                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                                                                : 'bg-emerald-50 border-emerald-200 text-emerald-800'
                                                         }`}>
-                                                        {shipment.current_status}
-                                                    </span>
+                                                            {shipment.payment_status || 'PAID'}
+                                                        </span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-right">
                                                     <div className="flex items-center justify-end gap-2">
@@ -455,23 +472,43 @@ export default function ShipmentsList() {
                         </div>
 
                         <form onSubmit={handleUpdateStatus} className="p-6 sm:p-8 space-y-6 overflow-y-auto">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">New Status</label>
-                                <div className="relative">
-                                    <select
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 focus:outline-none focus:border-primary font-bold text-xs text-slate-900 appearance-none cursor-pointer outline-none"
-                                        value={newUpdate.status}
-                                        onChange={(e) => setNewUpdate({ ...newUpdate, status: e.target.value })}
-                                        required
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="In Delivery">In Delivery</option>
-                                        <option value="Out for Delivery">Out for Delivery</option>
-                                        <option value="Delivered">Delivered</option>
-                                        <option value="Held">Held at Customs</option>
-                                        <option value="Postponed">Postponed</option>
-                                    </select>
-                                    <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">New Status</label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 focus:outline-none focus:border-primary font-bold text-xs text-slate-900 appearance-none cursor-pointer outline-none"
+                                            value={newUpdate.status}
+                                            onChange={(e) => setNewUpdate({ ...newUpdate, status: e.target.value })}
+                                            required
+                                        >
+                                            <option value="Pending">Pending</option>
+                                            <option value="In Delivery">In Delivery</option>
+                                            <option value="Out for Delivery">Out for Delivery</option>
+                                            <option value="Delivered">Delivered</option>
+                                            <option value="Held">Held at Customs</option>
+                                            <option value="Postponed">Postponed</option>
+                                        </select>
+                                        <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Payment Status</label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 focus:outline-none focus:border-primary font-bold text-xs text-slate-900 appearance-none cursor-pointer outline-none"
+                                            value={newUpdate.payment_status}
+                                            onChange={(e) => setNewUpdate({ ...newUpdate, payment_status: e.target.value })}
+                                            required
+                                        >
+                                            <option value="Paid">Paid (Verified)</option>
+                                            <option value="Pending">Pending Payment</option>
+                                            <option value="Partially Paid">Partially Paid</option>
+                                            <option value="Unpaid">Unpaid / Payment Due</option>
+                                        </select>
+                                        <CreditCard className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+                                    </div>
                                 </div>
                             </div>
 

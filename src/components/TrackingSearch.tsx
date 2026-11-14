@@ -524,7 +524,15 @@ export default function TrackingSearch() {
                                             )}
                                             <div className="flex justify-between items-center pb-2 border-b border-slate-200/60">
                                                 <span className="text-slate-500 font-semibold">PAYMENT STATUS</span>
-                                                <span className="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[11px]">
+                                                <span className={`px-2.5 py-0.5 rounded-md font-bold text-[11px] uppercase tracking-wider ${
+                                                    result.payment_status?.toLowerCase() === 'pending'
+                                                        ? 'bg-amber-100 text-amber-800'
+                                                        : result.payment_status?.toLowerCase().includes('part')
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : result.payment_status?.toLowerCase() === 'unpaid'
+                                                        ? 'bg-rose-100 text-rose-800'
+                                                        : 'bg-emerald-100 text-emerald-700'
+                                                }`}>
                                                     {result.payment_status || 'PAID'}
                                                 </span>
                                             </div>
