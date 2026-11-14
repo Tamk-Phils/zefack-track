@@ -65,12 +65,15 @@ export default function AddShipment() {
         setError(null);
         setIsSaving(true);
 
+        const cleanTrackingNumber = formData.tracking_number.trim().toUpperCase();
+
         // Resolve coordinates
         const originCoords = await geocodeLocationQuery(formData.origin);
         const destCoords = await geocodeLocationQuery(formData.destination || formData.recipient_address);
 
         const newShipment = {
             ...formData,
+            tracking_number: cleanTrackingNumber,
             destination: formData.destination || formData.recipient_address,
             origin_lat: originCoords ? originCoords[0] : (formData.latitude || 32.7767),
             origin_lng: originCoords ? originCoords[1] : (formData.longitude || -96.7970),
@@ -79,6 +82,9 @@ export default function AddShipment() {
             latitude: originCoords ? originCoords[0] : (formData.latitude || 32.7767),
             longitude: originCoords ? originCoords[1] : (formData.longitude || -96.7970),
             weight: parseFloat(formData.weight) || 0,
+            declared_value: parseFloat(formData.declared_value) || 0,
+            quantity: parseInt(formData.quantity) || 1,
+            is_deleted: false,
             estimated_delivery: formData.estimated_delivery ? new Date(formData.estimated_delivery).toISOString() : null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -94,30 +100,34 @@ export default function AddShipment() {
         };
 
         try {
-            const { error: sbError } = await supabase
+            const { data: insertedData, error: sbError } = await supabase
                 .from('shipments')
-                .insert([newShipment]);
+                .insert([newShipment])
+                .select();
 
             if (sbError) {
-                console.warn("Supabase insert warning, falling back to local database:", sbError);
+                console.warn("Supabase insert warning, trying upsert:", sbError);
+                await supabase.from('shipments').upsert([newShipment], { onConflict: 'tracking_number' });
             }
 
             // Always ensure local cache storage copy exists
-            const existingRaw = localStorage.getItem("transglologistics_shipments") || localStorage.getItem("transglologistics_shipments");
+            const existingRaw = localStorage.getItem("transglologistics_shipments");
             const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-            existing.push({ ...newShipment, id: Math.random().toString(36).substr(2, 9) });
-            localStorage.setItem("transglologistics_shipments", JSON.stringify(existing));
+            const shipmentToStore = (insertedData && insertedData[0]) ? insertedData[0] : newShipment;
+            const filtered = existing.filter((s: any) => s.tracking_number !== cleanTrackingNumber);
+            filtered.unshift(shipmentToStore);
+            localStorage.setItem("transglologistics_shipments", JSON.stringify(filtered));
 
             if (formData.recipient_email) {
                 try {
                     await notifyShipmentCreated({
                         to: formData.recipient_email,
-                        subject: `Transglologistics: Package ${formData.tracking_number} Registered`,
-                        trackingNumber: formData.tracking_number,
+                        subject: `Transglologistics: Package ${cleanTrackingNumber} Registered`,
+                        trackingNumber: cleanTrackingNumber,
                         senderName: formData.sender_name || 'Transglologistics Admin',
                         recipientName: formData.recipient_name || 'Recipient',
                         origin: formData.origin || 'Source Hub',
-                        destination: formData.destination || 'Destination Hub'
+                        destination: newShipment.destination || 'Destination Hub'
                     });
                 } catch (emailErr) {
                     console.warn("Notification email dispatch notice:", emailErr);
@@ -128,10 +138,11 @@ export default function AddShipment() {
         } catch (err: any) {
             console.error("Shipment Registration Error:", err);
             // Fallback save to ensure administrative workflow is uninterrupted
-            const existingRaw = localStorage.getItem("transglologistics_shipments") || localStorage.getItem("transglologistics_shipments");
+            const existingRaw = localStorage.getItem("transglologistics_shipments");
             const existing: any[] = existingRaw ? JSON.parse(existingRaw) : [];
-            existing.push({ ...newShipment, id: Math.random().toString(36).substr(2, 9) });
-            localStorage.setItem("transglologistics_shipments", JSON.stringify(existing));
+            const filtered = existing.filter((s: any) => s.tracking_number !== cleanTrackingNumber);
+            filtered.unshift(newShipment);
+            localStorage.setItem("transglologistics_shipments", JSON.stringify(filtered));
             router.push("/admin/dashboard/shipments");
         } finally {
             setIsSaving(false);

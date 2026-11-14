@@ -58,8 +58,32 @@ export default function ShipmentsList() {
             if (error) throw error;
 
             if (data) {
-                setShipments(data as Shipment[]);
-                localStorage.setItem("transglologistics_shipments", JSON.stringify(data));
+                const mergedMap = new Map<string, Shipment>();
+                data.forEach((s: any) => {
+                    if (s.tracking_number) mergedMap.set(s.tracking_number.toUpperCase(), s as Shipment);
+                });
+
+                // Preserve any locally saved shipments not yet in Supabase and sync them up
+                if (cached) {
+                    try {
+                        const localList: Shipment[] = JSON.parse(cached);
+                        localList.forEach((ls: Shipment) => {
+                            if (ls.tracking_number) {
+                                const key = ls.tracking_number.toUpperCase();
+                                if (!mergedMap.has(key)) {
+                                    mergedMap.set(key, ls);
+                                    supabase.from('shipments').upsert([ls], { onConflict: 'tracking_number' }).then(() => {});
+                                }
+                            }
+                        });
+                    } catch (e) {}
+                }
+
+                const mergedList = Array.from(mergedMap.values()).sort(
+                    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                );
+                setShipments(mergedList);
+                localStorage.setItem("transglologistics_shipments", JSON.stringify(mergedList));
             }
         } catch (err: any) {
             clearTimeout(timeoutId);

@@ -16,6 +16,8 @@ export interface Shipment {
     description: string;   // Full cargo description
     sender_name?: string;
     sender_email?: string;
+    sender_phone?: string;
+    sender_address?: string;
     recipient_name?: string;
     recipient_address?: string;
     recipient_email?: string;
@@ -25,8 +27,13 @@ export interface Shipment {
     current_status: ShipmentStatus;
     weight?: number;
     dimensions?: string;
-    payment_method?: 'Gift Card' | 'Bank Transfer' | 'Crypto';
-    payment_status?: 'Paid' | 'Pending' | 'Partially Paid';
+    service_level?: string;
+    carrier?: string;
+    declared_value?: number;
+    quantity?: number;
+    special_notes?: string;
+    payment_method?: string;
+    payment_status?: 'Paid' | 'Pending' | 'Partially Paid' | string;
     estimated_delivery?: string;
     created_at: string;
     updated_at: string;

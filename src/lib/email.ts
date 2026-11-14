@@ -44,7 +44,10 @@ interface UpdateShipmentParams extends BaseEmailParams {
     description: string;
 }
 
-const getTrackingLink = () => `${process.env.NEXT_PUBLIC_APP_URL || "https://transglologistics.com"}/tracking`;
+const getTrackingLink = (trackingNumber?: string) => {
+    const base = process.env.NEXT_PUBLIC_APP_URL || "https://transglologistics.com";
+    return trackingNumber ? `${base}/tracking?number=${encodeURIComponent(trackingNumber)}` : `${base}/tracking`;
+};
 
 function getMailIdentity() {
     const address = (process.env.FROM_EMAIL || process.env.SMTP_USER || "support@transglologistics.com").trim();
@@ -75,7 +78,7 @@ export async function sendShipmentCreatedEmail({
     origin,
     destination
 }: NewShipmentParams) {
-    const trackingLink = getTrackingLink();
+    const trackingLink = getTrackingLink(trackingNumber);
     const mailIdentity = getMailIdentity();
     const recipient = cleanAddress(to);
     const adminCopy = cleanAddress(adminEmail) || mailIdentity.address;
@@ -186,7 +189,7 @@ export async function sendShipmentUpdateEmail({
     location,
     description
 }: UpdateShipmentParams) {
-    const trackingLink = getTrackingLink();
+    const trackingLink = getTrackingLink(trackingNumber);
     const mailIdentity = getMailIdentity();
     const recipient = cleanAddress(to);
 
