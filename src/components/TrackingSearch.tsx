@@ -522,12 +522,6 @@ export default function TrackingSearch() {
                                                     <span className="text-slate-900 font-bold">${Number(result.declared_value).toFixed(2)}</span>
                                                 </div>
                                             )}
-                                            {result.payment_method && (
-                                                <div className="flex justify-between items-center pb-2 border-b border-slate-200/60">
-                                                    <span className="text-slate-500 font-semibold">PAYMENT METHOD</span>
-                                                    <span className="text-slate-900 font-bold">{result.payment_method}</span>
-                                                </div>
-                                            )}
                                             <div className="flex justify-between items-center pb-2 border-b border-slate-200/60">
                                                 <span className="text-slate-500 font-semibold">PAYMENT STATUS</span>
                                                 <span className="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700 font-bold text-[11px]">
