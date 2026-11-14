@@ -48,9 +48,15 @@ const getTrackingLink = () => `${process.env.NEXT_PUBLIC_APP_URL || "https://tra
 
 function getMailIdentity() {
     const address = (process.env.FROM_EMAIL || process.env.SMTP_USER || "support@transglologistics.com").trim();
+    let name = (process.env.FROM_NAME || "Transglologistics").trim();
+    // Enforce Transglologistics and purge any residual Vortex brand name
+    if (!name || /vortex/i.test(name)) {
+        name = "Transglologistics";
+    }
     return {
         address,
-        name: process.env.FROM_NAME || "Transglologistics"
+        name,
+        formatted: `"${name}" <${address}>`
     };
 }
 
@@ -141,15 +147,20 @@ Support Email: support@transglologistics.com
 
     try {
         await getTransporter().sendMail({
-            from: mailIdentity,
+            from: mailIdentity.formatted,
+            sender: mailIdentity.formatted,
+            replyTo: mailIdentity.formatted,
             to: recipient,
             bcc: adminCopy && adminCopy !== recipient ? adminCopy : undefined,
-            replyTo: mailIdentity.address,
             subject,
             text: textContent,
             html: htmlContent,
             headers: {
-                'X-Mailer': 'Transglologistics-Shipping/1.0'
+                'From': mailIdentity.formatted,
+                'Sender': mailIdentity.formatted,
+                'Reply-To': mailIdentity.formatted,
+                'X-Mailer': 'Transglologistics-Shipping/1.0',
+                'X-Sender': mailIdentity.formatted
             }
         });
         console.log(`Email successfully dispatched to: ${recipient}`);
@@ -238,14 +249,19 @@ Support Email: support@transglologistics.com
 
     try {
         await getTransporter().sendMail({
-            from: mailIdentity,
+            from: mailIdentity.formatted,
+            sender: mailIdentity.formatted,
+            replyTo: mailIdentity.formatted,
             to: recipient,
-            replyTo: mailIdentity.address,
             subject,
             text: textContent,
             html: htmlContent,
             headers: {
-                'X-Mailer': 'Transglologistics-Shipping/1.0'
+                'From': mailIdentity.formatted,
+                'Sender': mailIdentity.formatted,
+                'Reply-To': mailIdentity.formatted,
+                'X-Mailer': 'Transglologistics-Shipping/1.0',
+                'X-Sender': mailIdentity.formatted
             }
         });
         console.log(`Update email successfully dispatched to: ${recipient}`);

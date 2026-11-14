@@ -276,13 +276,13 @@ export default function TrackingSearch() {
                             </div>
                         </div>
 
-                        <div className="p-8 md:p-12 space-y-10">
+                        <div className="p-4 sm:p-6 md:p-10 space-y-8 sm:space-y-10">
                             {/* Route Indicator */}
-                            <div className="p-6 md:p-8 rounded-2xl bg-blue-50/60 border border-blue-100">
+                            <div className="p-5 sm:p-6 md:p-8 rounded-2xl bg-blue-50/60 border border-blue-100">
                                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                                     <div className="text-center md:text-left space-y-1">
                                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">ORIGIN</p>
-                                        <p className="text-slate-900 text-xl font-extrabold">{result.origin}</p>
+                                        <p className="text-slate-900 text-lg sm:text-xl font-extrabold">{result.origin}</p>
                                     </div>
 
                                     <div className="flex-1 w-full max-w-md space-y-2">
@@ -294,44 +294,44 @@ export default function TrackingSearch() {
                                                 className="h-full bg-blue-600 rounded-full"
                                             />
                                         </div>
-                                        <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600">
-                                            <Truck size={14} className="animate-pulse" />
-                                            En Route via Transglologistics Transit Network
+                                        <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600 text-center">
+                                            <Truck size={14} className="animate-pulse shrink-0" />
+                                            <span>En Route via Transglologistics Transit Network</span>
                                         </div>
                                     </div>
 
                                     <div className="text-center md:text-right space-y-1">
                                         <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">DESTINATION</p>
-                                        <p className="text-slate-900 text-xl font-extrabold">{result.destination}</p>
+                                        <p className="text-slate-900 text-lg sm:text-xl font-extrabold">{result.destination}</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Optional Live Satellite GPS Map Toggle */}
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200 shadow-sm">
-                                    <div className="flex items-center gap-3.5">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shrink-0">
                                             <Globe size={20} />
                                         </div>
-                                        <div>
-                                            <h4 className="font-extrabold text-slate-900 text-sm md:text-base">Interactive Satellite GPS Map</h4>
-                                            <p className="text-slate-500 text-xs font-medium">Real-time route telemetry & transit tracking (Optional)</p>
+                                        <div className="min-w-0">
+                                            <h4 className="font-extrabold text-slate-900 text-sm md:text-base leading-tight">Interactive Satellite GPS Map</h4>
+                                            <p className="text-slate-500 text-xs font-medium mt-0.5 leading-snug">Real-time route telemetry & transit tracking</p>
                                         </div>
                                     </div>
 
                                     <button
                                         type="button"
                                         onClick={() => setShowMap(!showMap)}
-                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer shadow-sm ${
+                                        className={`w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-extrabold border transition-all cursor-pointer shadow-sm whitespace-nowrap ${
                                             showMap 
                                                 ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' 
                                                 : 'bg-white text-slate-700 border-slate-200 hover:border-blue-600 hover:text-blue-600'
                                         }`}
                                     >
-                                        <MapPin size={15} />
+                                        <MapPin size={14} />
                                         <span>{showMap ? "Hide Satellite Map" : "View Satellite Map"}</span>
-                                        <ChevronDown size={15} className={`transition-transform duration-300 ${showMap ? "rotate-180" : ""}`} />
+                                        <ChevronDown size={14} className={`transition-transform duration-300 ${showMap ? "rotate-180" : ""}`} />
                                     </button>
                                 </div>
 
@@ -344,11 +344,7 @@ export default function TrackingSearch() {
                                             transition={{ duration: 0.3 }}
                                             className="overflow-hidden"
                                         >
-                                            <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative">
-                                                <div className="absolute top-4 left-4 z-[400] bg-slate-900/90 backdrop-blur-md px-4 py-2 rounded-xl text-white flex items-center gap-3">
-                                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-                                                    <span className="text-xs font-bold uppercase tracking-wider">TRANSGLOLOGISTICS LIVE SATELLITE GPS</span>
-                                                </div>
+                                            <div className="h-[340px] sm:h-[420px] w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md relative">
                                                 <LiveMap
                                                     lat={result.latitude}
                                                     lng={result.longitude}

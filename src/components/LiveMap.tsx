@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { getCoordsFromLocationName } from '@/lib/geocoding';
@@ -194,111 +195,194 @@ export default function LiveMap({
     ];
 
     const toggleFullscreen = () => {
-        setIsFullscreen(!isFullscreen);
+        setIsFullscreen(prev => !prev);
     };
 
-    return (
-        <div className={`w-full h-full relative ${isFullscreen ? 'fixed inset-0 z-[9999] bg-slate-900 p-4 sm:p-8 flex flex-col' : ''}`}>
-            {/* Overlay Map View Controls */}
-            <div className="absolute top-4 right-4 z-[450] flex items-center gap-2">
-                <button
-                    type="button"
-                    onClick={() => setViewMode('package')}
-                    className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-lg backdrop-blur-md border ${
-                        viewMode === 'package' 
-                            ? 'bg-primary text-white border-primary shadow-primary/30' 
-                            : 'bg-slate-900/80 text-slate-300 border-white/10 hover:bg-slate-900 hover:text-white'
-                    }`}
-                    title="Zoom in on package location"
-                >
-                    <Navigation size={14} className={viewMode === 'package' ? 'animate-bounce' : ''} />
-                    <span>Focus Package</span>
-                </button>
-                
-                <button
-                    type="button"
-                    onClick={() => setViewMode('route')}
-                    className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-lg backdrop-blur-md border ${
-                        viewMode === 'route' 
-                            ? 'bg-primary text-white border-primary shadow-primary/30' 
-                            : 'bg-slate-900/80 text-slate-300 border-white/10 hover:bg-slate-900 hover:text-white'
-                    }`}
-                    title="Show entire route"
-                >
-                    <Compass size={14} />
-                    <span>Full Route</span>
-                </button>
+    // Prevent body scrolling when map is in fullscreen portal
+    useEffect(() => {
+        if (isFullscreen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isFullscreen]);
 
-                <button
-                    type="button"
-                    onClick={toggleFullscreen}
-                    className="p-2.5 rounded-xl bg-slate-900/80 text-slate-300 border border-white/10 hover:bg-slate-900 hover:text-white transition-all shadow-lg backdrop-blur-md"
-                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Map"}
-                >
-                    {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-                </button>
+    const renderMapContent = (inFullscreen: boolean) => (
+        <MapContainer
+            center={currentCoords}
+            zoom={13}
+            className="w-full h-full z-0"
+            scrollWheelZoom={true}
+            doubleClickZoom={true}
+            touchZoom={true}
+            zoomControl={true}
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            {/* Traversed Path: Origin -> Current Location */}
+            <Polyline
+                positions={[startCoords, currentCoords]}
+                pathOptions={{ color: '#0070F3', weight: 6, opacity: 0.85 }}
+            />
+
+            {/* Remaining Path: Current Location -> Destination */}
+            <Polyline
+                positions={[currentCoords, destCoords]}
+                pathOptions={{ color: '#64748B', weight: 4, dashArray: '8, 10', opacity: 0.6 }}
+            />
+
+            {/* Start Marker */}
+            <Marker position={startCoords} icon={originIcon}>
+                <Popup>
+                    <div className="font-bold text-xs uppercase text-slate-900">
+                        Origin: {originName || "Start Location"}
+                    </div>
+                </Popup>
+            </Marker>
+
+            {/* Destination Marker */}
+            <Marker position={destCoords} icon={destinationIcon}>
+                <Popup>
+                    <div className="font-bold text-xs uppercase text-slate-900">
+                        Destination: {destinationName || "Final Destination"}
+                    </div>
+                </Popup>
+            </Marker>
+
+            {/* Moving Package Marker */}
+            <Marker position={movingPos} icon={movingTruckIcon}>
+                <Popup>
+                    <div className="font-bold text-xs uppercase text-slate-900">
+                        Current Location: {currentLocationName || "In Transit"}
+                    </div>
+                </Popup>
+            </Marker>
+
+            <MapFocusController 
+                currentCoords={currentCoords} 
+                viewMode={viewMode} 
+                bounds={bounds} 
+                isFullscreen={inFullscreen} 
+            />
+        </MapContainer>
+    );
+
+    return (
+        <>
+            {/* Inline Map View */}
+            <div className="w-full h-full relative overflow-hidden rounded-2xl">
+                {/* Unified Responsive Top Overlay Bar */}
+                <div className="absolute top-2.5 left-2.5 right-2.5 z-[450] flex items-center justify-between gap-2 pointer-events-none">
+                    {/* Live Status Badge */}
+                    <div className="bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl text-white flex items-center gap-1.5 shadow-lg border border-white/10 shrink-0 pointer-events-auto">
+                        <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shrink-0" />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider">
+                            <span className="hidden sm:inline">TRANSGLOLOGISTICS </span>LIVE GPS
+                        </span>
+                    </div>
+
+                    {/* Controls Bar */}
+                    <div className="flex items-center gap-1 sm:gap-1.5 pointer-events-auto shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('package')}
+                            className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1 transition-all shadow-md backdrop-blur-md border ${
+                                viewMode === 'package' 
+                                    ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/30' 
+                                    : 'bg-slate-900/80 text-slate-300 border-white/10 hover:bg-slate-900 hover:text-white'
+                            }`}
+                            title="Focus on package location"
+                        >
+                            <Navigation size={12} className={viewMode === 'package' ? 'animate-bounce' : ''} />
+                            <span>Focus</span>
+                        </button>
+                        
+                        <button
+                            type="button"
+                            onClick={() => setViewMode('route')}
+                            className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider flex items-center gap-1 transition-all shadow-md backdrop-blur-md border ${
+                                viewMode === 'route' 
+                                    ? 'bg-blue-600 text-white border-blue-500 shadow-blue-500/30' 
+                                    : 'bg-slate-900/80 text-slate-300 border-white/10 hover:bg-slate-900 hover:text-white'
+                            }`}
+                            title="Show entire route"
+                        >
+                            <Compass size={12} />
+                            <span>Route</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={toggleFullscreen}
+                            className="p-1.5 sm:p-2 rounded-xl bg-slate-900/80 text-slate-300 border border-white/10 hover:bg-slate-900 hover:text-white transition-all shadow-md backdrop-blur-md flex items-center gap-1"
+                            title="Open Fullscreen Map"
+                        >
+                            <Maximize2 size={14} />
+                            <span className="hidden sm:inline text-[10px] font-bold uppercase">Expand</span>
+                        </button>
+                    </div>
+                </div>
+
+                {renderMapContent(false)}
             </div>
 
-            <MapContainer
-                center={currentCoords}
-                zoom={13}
-                className="w-full h-full rounded-sm z-0"
-                scrollWheelZoom={true}
-                doubleClickZoom={true}
-                touchZoom={true}
-                zoomControl={true}
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                {/* Traversed Path: Origin -> Current Location */}
-                <Polyline
-                    positions={[startCoords, currentCoords]}
-                    pathOptions={{ color: '#0070F3', weight: 6, opacity: 0.8 }}
-                />
-
-                {/* Remaining Path: Current Location -> Destination */}
-                <Polyline
-                    positions={[currentCoords, destCoords]}
-                    pathOptions={{ color: '#64748B', weight: 4, dashArray: '8, 10', opacity: 0.6 }}
-                />
-
-                {/* Start Marker */}
-                <Marker position={startCoords} icon={originIcon}>
-                    <Popup>
-                        <div className="font-bold text-xs uppercase text-slate-900">
-                            Origin: {originName || "Start Location"}
+            {/* True Edge-to-Edge Fullscreen Portal */}
+            {isFullscreen && typeof document !== 'undefined' && createPortal(
+                <div className="fixed inset-0 z-[999999] bg-slate-950 flex flex-col w-screen h-[100dvh]">
+                    {/* Fullscreen Top Header */}
+                    <div className="bg-slate-900/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center justify-between z-[1000] shrink-0">
+                        <div className="flex items-center gap-2.5 text-white">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+                            <span className="font-extrabold text-xs sm:text-sm uppercase tracking-wider">
+                                TRANSGLOLOGISTICS SATELLITE RADAR
+                            </span>
                         </div>
-                    </Popup>
-                </Marker>
 
-                {/* Destination Marker */}
-                <Marker position={destCoords} icon={destinationIcon}>
-                    <Popup>
-                        <div className="font-bold text-xs uppercase text-slate-900">
-                            Destination: {destinationName || "Final Destination"}
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setViewMode('package')}
+                                className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                                    viewMode === 'package' ? 'bg-blue-600 text-white' : 'bg-white/10 text-slate-300 hover:text-white'
+                                }`}
+                            >
+                                <Navigation size={13} />
+                                <span>Focus</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setViewMode('route')}
+                                className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                                    viewMode === 'route' ? 'bg-blue-600 text-white' : 'bg-white/10 text-slate-300 hover:text-white'
+                                }`}
+                            >
+                                <Compass size={13} />
+                                <span>Route</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={toggleFullscreen}
+                                className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md"
+                            >
+                                <Minimize2 size={13} />
+                                <span>Close</span>
+                            </button>
                         </div>
-                    </Popup>
-                </Marker>
+                    </div>
 
-                {/* Moving Package Marker */}
-                <Marker position={movingPos} icon={movingTruckIcon}>
-                    <Popup>
-                        <div className="font-bold text-xs uppercase text-slate-900">
-                            Current Location: {currentLocationName || "In Transit"}
-                        </div>
-                    </Popup>
-                </Marker>
-
-                <MapFocusController 
-                    currentCoords={currentCoords} 
-                    viewMode={viewMode} 
-                    bounds={bounds} 
-                    isFullscreen={isFullscreen} 
-                />
-            </MapContainer>
-        </div>
+                    {/* Fullscreen Map Body */}
+                    <div className="flex-1 w-full h-full relative">
+                        {renderMapContent(true)}
+                    </div>
+                </div>,
+                document.body
+            )}
+        </>
     );
 }
