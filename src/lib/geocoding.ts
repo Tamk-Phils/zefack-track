@@ -45,9 +45,16 @@ export const KNOWN_LOCATIONS: Record<string, [number, number]> = {
 export function getCoordsFromLocationName(name?: string): [number, number] | null {
     if (!name) return null;
     const clean = name.trim().toLowerCase();
+    if (!clean) return null;
     
+    // Exact match first
+    if (KNOWN_LOCATIONS[clean]) {
+        return KNOWN_LOCATIONS[clean];
+    }
+
+    // Match if clean contains the known location key (key must be at least 3 chars)
     for (const key in KNOWN_LOCATIONS) {
-        if (clean.includes(key) || key.includes(clean)) {
+        if (key.length >= 3 && clean.includes(key)) {
             return KNOWN_LOCATIONS[key];
         }
     }

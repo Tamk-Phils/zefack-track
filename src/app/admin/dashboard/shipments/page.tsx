@@ -26,8 +26,8 @@ export default function ShipmentsList() {
         status: "Pending",
         location: "",
         description: "",
-        lat: 52.5200,
-        lng: 13.4050
+        lat: 32.7767,
+        lng: -96.7970
     });
 
     const handleCopy = (id: string) => {
@@ -122,10 +122,10 @@ export default function ShipmentsList() {
         setEditingShipment(shipment);
         setNewUpdate({
             status: shipment.current_status || "Pending",
-            location: "",
+            location: shipment.updates?.[0]?.location || shipment.origin || "",
             description: "",
-            lat: shipment.latitude || 32.7767,
-            lng: shipment.longitude || -96.7970
+            lat: shipment.latitude || shipment.origin_lat || 32.7767,
+            lng: shipment.longitude || shipment.origin_lng || -96.7970
         });
         setIsModalOpen(true);
     };
@@ -403,12 +403,29 @@ export default function ShipmentsList() {
                             </div>
 
                             <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Current Checkpoint Location (City / Hub)</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Regional Logistics Facility, Sorting Hub..."
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3.5 px-4 focus:outline-none focus:border-primary font-bold text-xs text-slate-900 outline-none"
+                                    value={newUpdate.location}
+                                    onChange={(e) => setNewUpdate({ ...newUpdate, location: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Update Current Location on Map</label>
                                 <div className="rounded-xl overflow-hidden border border-slate-200 shadow-inner">
                                     <MapPicker 
                                         initialLat={newUpdate.lat} 
                                         initialLng={newUpdate.lng} 
-                                        onChange={(lat, lng) => setNewUpdate({ ...newUpdate, lat, lng })} 
+                                        initialAddress={newUpdate.location}
+                                        onChange={(lat, lng, address) => setNewUpdate(prev => ({
+                                            ...prev,
+                                            lat,
+                                            lng,
+                                            location: address || prev.location
+                                        }))} 
                                     />
                                 </div>
                             </div>
