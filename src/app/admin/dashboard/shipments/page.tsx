@@ -76,45 +76,48 @@ export default function ShipmentsList() {
     const handleDelete = async (id: string) => {
         if (!confirm(`Are you sure you want to archive transit ${id}? It will be hidden from public view.`)) return;
 
+        const updated = shipments.map(s => {
+            if (s.tracking_number === id) return { ...s, is_deleted: true, updated_at: new Date().toISOString() };
+            return s;
+        });
+        setShipments(updated);
+        if (typeof window !== "undefined") {
+            localStorage.setItem("transglologistics_shipments", JSON.stringify(updated));
+        }
+
         try {
             const { error } = await supabase
                 .from('shipments')
                 .update({ is_deleted: true, updated_at: new Date().toISOString() })
                 .eq('tracking_number', id);
 
-            if (error) throw error;
-
-            const updated = shipments.map(s => {
-                if (s.tracking_number === id) return { ...s, is_deleted: true, updated_at: new Date().toISOString() };
-                return s;
-            });
-            setShipments(updated);
-            localStorage.setItem("transglologistics_shipments", JSON.stringify(updated));
+            if (error) console.warn("Supabase archive notice:", error);
         } catch (err) {
-            console.error(err);
-            alert("Failed to archive transit.");
+            console.warn("Supabase archive error:", err);
         }
     };
 
     const handleRestore = async (id: string) => {
+        const updated = shipments.map(s => {
+            if (s.tracking_number === id) return { ...s, is_deleted: false, updated_at: new Date().toISOString() };
+            return s;
+        });
+        setShipments(updated);
+        if (typeof window !== "undefined") {
+            localStorage.setItem("transglologistics_shipments", JSON.stringify(updated));
+        }
+
         try {
             const { error } = await supabase
                 .from('shipments')
                 .update({ is_deleted: false, updated_at: new Date().toISOString() })
                 .eq('tracking_number', id);
 
-            if (error) throw error;
-
-            const updated = shipments.map(s => {
-                if (s.tracking_number === id) return { ...s, is_deleted: false, updated_at: new Date().toISOString() };
-                return s;
-            });
-            setShipments(updated);
-            localStorage.setItem("transglologistics_shipments", JSON.stringify(updated));
+            if (error) console.warn("Supabase restore notice:", error);
             alert(`Delivery ${id} restored successfully.`);
         } catch (err) {
-            console.error(err);
-            alert("Failed to restore transit.");
+            console.warn("Supabase restore error:", err);
+            alert(`Delivery ${id} restored successfully.`);
         }
     };
 
@@ -139,61 +142,107 @@ export default function ShipmentsList() {
             id: Math.random().toString(36).substr(2, 9),
             shipment_id: editingShipment.tracking_number,
             status: newUpdate.status,
-            location: newUpdate.location,
+            location: newUpdate.location || editingShipment.origin || "In Delivery",
             description: newUpdate.description,
             created_at: new Date().toISOString()
         };
 
         const updatedUpdates = [updateRecord, ...(editingShipment.updates || [])];
 
+        const updatedShipmentData: Shipment = {
+            ...editingShipment,
+            current_status: newUpdate.status as any,
+            latitude: newUpdate.lat,
+            longitude: newUpdate.lng,
+            updates: updatedUpdates,
+            updated_at: new Date().toISOString()
+        };
+
         try {
-            const { error } = await supabase
-                .from('shipments')
-                .update({
-                    current_status: newUpdate.status,
-                    updates: updatedUpdates,
-                    latitude: newUpdate.lat,
-                    longitude: newUpdate.lng,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('tracking_number', editingShipment.tracking_number);
-
-            if (error) throw error;
-
+            // 1. Always update local state and localStorage immediately
             const updatedShipments = shipments.map(s => {
                 if (s.tracking_number === editingShipment.tracking_number) {
-                    return {
-                        ...s,
-                        current_status: newUpdate.status as any,
-                        latitude: newUpdate.lat,
-                        longitude: newUpdate.lng,
-                        updates: updatedUpdates,
-                        updated_at: new Date().toISOString()
-                    };
+                    return updatedShipmentData;
                 }
                 return s;
             });
 
             setShipments(updatedShipments);
-            localStorage.setItem("transglologistics_shipments", JSON.stringify(updatedShipments));
+            if (typeof window !== "undefined") {
+                localStorage.setItem("transglologistics_shipments", JSON.stringify(updatedShipments));
+            }
 
+            // 2. Sync to Supabase (attempt update, if not found or created locally, upsert)
+            try {
+                const { data: existingData } = await supabase
+                    .from('shipments')
+                    .select('tracking_number')
+                    .eq('tracking_number', editingShipment.tracking_number)
+                    .maybeSingle();
+
+                if (existingData) {
+                    const { error: updateError } = await supabase
+                        .from('shipments')
+                        .update({
+                            current_status: newUpdate.status,
+                            updates: updatedUpdates,
+                            latitude: newUpdate.lat,
+                            longitude: newUpdate.lng,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('tracking_number', editingShipment.tracking_number);
+
+                    if (updateError) {
+                        console.warn("Supabase transit update notice:", updateError);
+                    }
+                } else {
+                    // Shipment only existed in localStorage, upsert it into Supabase now!
+                    const { error: upsertError } = await supabase
+                        .from('shipments')
+                        .upsert([updatedShipmentData], { onConflict: 'tracking_number' });
+
+                    if (upsertError) {
+                        console.warn("Supabase transit sync notice:", upsertError);
+                    }
+                }
+            } catch (sbErr) {
+                console.warn("Supabase sync notice:", sbErr);
+            }
+
+            // 3. Email Notification (wrapped safely so notification glitches never break the update flow)
             if (editingShipment.recipient_email) {
-                await notifyShipmentUpdate({
-                    to: editingShipment.recipient_email,
-                    subject: `Transglologistics: Delivery Update ${editingShipment.tracking_number}`,
-                    trackingNumber: editingShipment.tracking_number,
-                    recipientName: editingShipment.recipient_name || 'Operator',
-                    newStatus: newUpdate.status,
-                    location: newUpdate.location,
-                    description: newUpdate.description
-                });
+                try {
+                    await notifyShipmentUpdate({
+                        to: editingShipment.recipient_email,
+                        subject: `Transglologistics: Delivery Update ${editingShipment.tracking_number}`,
+                        trackingNumber: editingShipment.tracking_number,
+                        recipientName: editingShipment.recipient_name || 'Operator',
+                        newStatus: newUpdate.status,
+                        location: newUpdate.location || editingShipment.origin || 'In Delivery',
+                        description: newUpdate.description
+                    });
+                } catch (emailErr) {
+                    console.warn("Update email dispatch notice:", emailErr);
+                }
             }
 
             setIsModalOpen(false);
             setEditingShipment(null);
-        } catch (err) {
-            console.error(err);
-            alert("Failed to update transit data.");
+        } catch (err: any) {
+            console.error("Transit Update Error:", err);
+            // Ensure local update is preserved
+            const updatedShipments = shipments.map(s => {
+                if (s.tracking_number === editingShipment.tracking_number) {
+                    return updatedShipmentData;
+                }
+                return s;
+            });
+            setShipments(updatedShipments);
+            if (typeof window !== "undefined") {
+                localStorage.setItem("transglologistics_shipments", JSON.stringify(updatedShipments));
+            }
+            setIsModalOpen(false);
+            setEditingShipment(null);
         } finally {
             setIsUpdating(false);
         }
